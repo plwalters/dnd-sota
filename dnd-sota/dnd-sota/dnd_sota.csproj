@@ -198,6 +198,7 @@
     <Content Include="App\viewmodels\gameStart\designer.js" />
     <Content Include="App\viewmodels\gameStart\game.js" />
     <Content Include="App\viewmodels\gameStart\purchase.js" />
+    <Content Include="App\viewmodels\about.js" />
     <Content Include="App\viewmodels\home.js" />
     <Content Include="App\viewmodels\shell.js" />
     <Content Include="App\viewmodels\start.js" />
@@ -205,6 +206,7 @@
     <Content Include="App\views\gameStart\designer.html" />
     <Content Include="App\views\gameStart\game.html" />
     <Content Include="App\views\gameStart\purchase.html" />
+    <Content Include="App\views\about.html" />
     <Content Include="App\views\home.html" />
     <Content Include="App\views\shell.html" />
     <Content Include="App\views\start.html" />

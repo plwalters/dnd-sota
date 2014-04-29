@@ -1,9 +1,58 @@
-<div class="row" data-bind="visible: state() > 0">
-	<div class="span2">
+<div class="row">
+	<div class="span1">
 
 	</div>
+	<div class="span2" data-bind="with: player">
+		<h3>ATTRIBUTES</h3>
+		<ul>
+			<li>
+				<span>NAME: </span><span data-bind="text: name"></span>
+			</li>
+			<li>
+				<span>HIT POINTS: </span><span data-bind="text: hitPoints"></span>
+			</li>
+			<li>
+				<span>GOLD: </span><span data-bind="text: gold"></span>
+			</li>
+			<li>
+				<span>STRENGTH: </span><span data-bind="text: strength"></span>
+			</li>
+			<li>
+				<span>DEXTERITY: </span><span data-bind="text: dexterity"></span>
+			</li>
+			<li>
+				<span>CONSTITUTION: </span><span data-bind="text: constitution"></span>
+			</li>
+			<li>
+				<span>WISDOM: </span><span data-bind="text: wisdom"></span>
+			</li>
+			<li>
+				<span>INTELLECT: </span><span data-bind="text: intellect"></span>
+			</li>
+			<li>
+				<!-- ko if: weapon() -->
+				<span>WIELDING: </span><span data-bind="text: weapon().name"></span>
+				<!-- /ko -->
+				<!-- ko ifnot: weapon() -->
+				<span>WIELDING: </span><span>NOTHING</span>
+				<!-- /ko -->
+			</li>
+		</ul>
+		<h3>WEAPONS</h3>
+		<ul data-bind="foreach: weapons">
+			<li>
+				<strong><span>NAME: </span><span data-bind="text: name"></span> - VALUE: <span data-bind="text: value"></span></strong>
+			</li>
+		</ul>
+		<h3>ITEMS</h3>
+		<ul data-bind="foreach: items">
+			<li>
+				<strong><span data-bind="text: $index() + 1"></span> - <span>NAME: </span><span data-bind="text: name"></span> - VALUE: <span data-bind="text: value"></span></strong>
+			</li>
+		</ul>
+	</div>
 	<div class="span8">		
-		<div>
+		<div data-bind="visible: (state() === 1 || state() === 2 )">
 			<h5>BUYING WEAPONS</h5>
 			<div class="" data-bind="visible: state() === 1">
 				<h5>FAST OR NORM</h5>
@@ -11,14 +60,26 @@
 			</div>
 			<div class="" data-bind="visible: state() === 2">
 				<h5>NUMBER, ITEM, PRICE</h5>
+				<h5>DONE WHEN FINISHED</h5>
 				<ul data-bind="foreach: weaponTypes">
 					<li data-bind="text: (id() + ', ' + name() + ', ' + value())"></li>
 				</ul>
 				<input data-bind="value: weaponName, returnAction: addWeapon, hasFocus: state() === 2, valueUpdate: 'afterkeydown'" />
 			</div>
 		</div>
+		<div data-bind="visible: state() === 3">
+			<h5>BUYING ITEMS</h5>
+			<div class="">
+				<h5>NUMBER, ITEM, PRICE</h5>
+				<h5>DONE WHEN FINISHED</h5>
+				<ul data-bind="foreach: items">
+					<li data-bind="text: (id() + ', ' + name() + ', ' + value())"></li>
+				</ul>
+				<input data-bind="value: itemName, returnAction: addItem, hasFocus: state() === 3, valueUpdate: 'afterkeydown'" />
+			</div>
+		</div>
 	</div>	
-	<div class="span2">
+	<div class="span1">
 
 	</div>
 </div>

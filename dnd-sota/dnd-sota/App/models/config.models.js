@@ -22,7 +22,14 @@
 	                name: { dataType: "String" },
 	                quantity: { dataType: "Int64" },
 	                value: { dataType: "Int64" },
-	                canBuy: { dataType: "Boolean" }
+	                canBuy: { dataType: "Boolean" },
+	                playerId: { dataType: "Int64" }
+	            },
+	            navigationProperties: {
+					player: {
+						entityTypeName: "Character", isScalar: true,
+						associationName: "Character_Items", foreignKeyNames: ["playerId"]
+					}	            	
 	            }
 	        });
 
@@ -194,7 +201,7 @@
 					},					
 					items: {
 						entityTypeName: "Item", isScalar: false,
-						associationName: "Character_Item"
+						associationName: "Character_Items"
 					}
 	            }
 	        });

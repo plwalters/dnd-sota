@@ -11,13 +11,14 @@ define(['services/session', 'services/datacontext', 'plugins/router'], function 
 	var isLoading = ko.observable();
 	var instructions = [
 		'U,D,L,R - MOVE',
-		'2 - OPEN',
-		'3 - SEARCH',
-		'4 - WIELD',
+		'2 - OPEN DOOR',
+		'3 - SEARCH (TRAPS, DOORS)',
+		'4 - SWITCH WEAPON',
 		'5 - FIGHT',
-		'7 - SAVE',
-		'8 - CAST',
+		'7 - SAVE GAME',
+		'8 - USE MAGIC',
 		'9 - BUY MAGIC',
+		'10 - LOAD DUNGEON',
 		'11 - BUY HP',
 		'0 - PASS;'
 	];
@@ -28,7 +29,7 @@ define(['services/session', 'services/datacontext', 'plugins/router'], function 
 		player(session.currentPlayer());
 		// Go get the current map
 		if (!player()) {			
-			return router.navigate('charcreate');
+			return router.navigate('');
 		}
 		//datacontext.getMap(map, 2);
 		createPlayerOnMap();

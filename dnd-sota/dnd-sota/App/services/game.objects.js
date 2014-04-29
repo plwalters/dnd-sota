@@ -1,12 +1,12 @@
 ﻿define(['services/datacontext'], function (datacontext) {
 
 	var weapons = ko.observableArray([	
-		datacontext.createEntity('Weapon', { name: 'Sword', damage: 1, value: 10 } ),
-		datacontext.createEntity('Weapon', { name: '2-H-SWORD', damage: 1, value: 15 } ),
-		datacontext.createEntity('Weapon', { name: 'DAGGER', damage: 1, value: 3 } ),
-		datacontext.createEntity('Weapon', { name: 'MACE', damage: 1, value: 15 } ),
-		datacontext.createEntity('Weapon', { name: 'SPEAR', damage: 1, value: 15 } ),
-		datacontext.createEntity('Weapon', { name: 'BOW', damage: 1, value: 15 } )
+		datacontext.createEntity('Weapon', { id: 1, name: 'SWORD', damage: 1, value: 10 } ),
+		datacontext.createEntity('Weapon', { id: 2, name: '2-H-SWORD', damage: 1, value: 15 } ),
+		datacontext.createEntity('Weapon', { id: 3, name: 'DAGGER', damage: 1, value: 3 } ),
+		datacontext.createEntity('Weapon', { id: 4, name: 'MACE', damage: 1, value: 15 } ),
+		datacontext.createEntity('Weapon', { id: 5, name: 'SPEAR', damage: 1, value: 15 } ),
+		datacontext.createEntity('Weapon', { id: 6, name: 'BOW', damage: 1, value: 15 } )
 	]);
 
 	var armors = ko.observableArray([
@@ -18,7 +18,9 @@
 	var tileTypes = ko.observableArray([
 		datacontext.createEntity('TileType', { name: 'WALL', designerImage: '*', image: '*' } ),
 		datacontext.createEntity('TileType', { name: 'EMPTY', designerImage: '.', image: ' '} ),
-		datacontext.createEntity('TileType', { name: 'GOLD', designerImage: '$', image: '$'  } )
+		datacontext.createEntity('TileType', { name: 'GOLD', designerImage: '$', image: '$'  } ),
+		datacontext.createEntity('TileType', { name: 'ENEMY', designerImage: 'E', image: 'E'  } ),
+		datacontext.createEntity('TileType', { name: 'DOOR', designerImage: 'D', image: 'D'  } )
 	]);
 
 	var classTypes = ko.observableArray([	
@@ -37,13 +39,13 @@
 	]);
 
 	var items = ko.observableArray([	
-		datacontext.createEntity('Item', { name: 'ROPE', value: 1, canBuy: true } ),
-		datacontext.createEntity('Item', { name: 'SPIKES', value: 1, canBuy: true } ),
-		datacontext.createEntity('Item', { name: 'FLASK OF OIL', value: 2, canBuy: true } ),
-		datacontext.createEntity('Item', { name: 'SILVER CROSS', value: 25, canBuy: true } ),
-		datacontext.createEntity('Item', { name: 'SPARE FOOD', value: 5, canBuy: true } ),
-		datacontext.createEntity('Item', { name: 'ARROWS', value: 15, canBuy: true } ),
-		datacontext.createEntity('Item', { name: 'GOLD', value: 25, canBuy: false } )
+		datacontext.createEntity('Item', { id: 7, name: 'ROPE', value: 1, canBuy: true } ),
+		datacontext.createEntity('Item', { id: 8, name: 'SPIKES', value: 1, canBuy: true } ),
+		datacontext.createEntity('Item', { id: 9, name: 'FLASK OF OIL', value: 2, canBuy: true } ),
+		datacontext.createEntity('Item', { id: 10, name: 'SILVER CROSS', value: 25, canBuy: true } ),
+		datacontext.createEntity('Item', { id: 11, name: 'SPARE FOOD', value: 5, canBuy: true } ),
+		datacontext.createEntity('Item', { id: 12, name: 'ARROWS', value: 15, canBuy: true } ),
+		datacontext.createEntity('Item', { id: 13, name: 'GOLD', value: 25, canBuy: false } )
 	]);
 
 	var goldItem = items()[6];

@@ -1,4 +1,4 @@
-<div class="row" data-bind="visible: state() > 0">
+<div class="row" data-bind="visible: state() === 1">
 	<div class="span2">
 
 	</div>
@@ -12,12 +12,13 @@
 
 	</div>
 </div>
-<div class="row" data-bind="visible: state() > 1">
+<div class="row" data-bind="visible: state() === 2">
 	<div class="span2">
 
 	</div>
 	<div class="span8">		
 		<div data-bind="with: character">
+			<h5>CLASSIFICATION</h5>
 			<h5>WHICH DO YOU WANT TO BE</h5>
 			<h5 data-bind="text: $parent.classTypesString"></h5>
 			<input data-bind="value: $parent.className, returnAction: $parent.addClass, hasFocus: $parent.focusClassInput, valueUpdate: 'afterkeydown'" />
