@@ -1,0 +1,34 @@
+<div class="row">
+	<div class="span2">
+
+	</div>
+	<div class="span8">
+		<div class="row">
+			<h5>LEVEL DESIGNER</h5>
+			<div class="span12">
+				<label>MAP ID: </label><input data-bind="value: idValue" />
+				<label>MAP NAME: </label><input data-bind="value: nameValue" />
+			</div>
+		</div>
+		<div class="row">
+			<textarea class="span12" data-bind="value: mapString"></textarea>
+		</div>
+		<div class="row">
+			<!-- ko if: isNew -->
+			<button data-bind="click: create">Create</button>
+			<!-- /ko -->
+			<!-- ko ifnot: isNew -->
+			<button data-bind="click: save">Save</button>
+			<!-- /ko -->
+		</div>
+	</div>	
+	<div class="span2">
+		<h3>AVAILABLE TILES:</h3>
+		<small>NAME : DESIGNER CHAR : OUTPUT</small>
+		<ul>
+			<li data-bind="foreach: tileTypes">
+				<strong><span data-bind="text: name"> : </span><span data-bind="text: designerImage"></span> : <span data-bind="text: image"></span></strong>
+			</li>
+		</ul>
+	</div>
+</div>

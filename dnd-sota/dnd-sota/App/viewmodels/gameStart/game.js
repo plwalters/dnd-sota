@@ -8,6 +8,7 @@ define(['services/session', 'services/datacontext', 'plugins/router'], function 
 	var isBuyingHP = ko.observable();
 	var isBuyingMagic = ko.observable();
 	var isWielding = ko.observable();
+	var isLoading = ko.observable();
 	var instructions = [
 		'U,D,L,R - MOVE',
 		'2 - OPEN',
@@ -20,7 +21,7 @@ define(['services/session', 'services/datacontext', 'plugins/router'], function 
 		'11 - BUY HP',
 		'0 - PASS;'
 	];
-	var gameMessage = ko.observable('UP, DOWN, LEFT, RIGHT TO MOVE');
+	var gameMessage = ko.observable('WHICH DUNGEON # ');
 	var focusGameInput = ko.observable(false);
 
 	function activate() {
@@ -29,7 +30,7 @@ define(['services/session', 'services/datacontext', 'plugins/router'], function 
 		if (!player()) {			
 			return router.navigate('charcreate');
 		}
-		datacontext.getMap(map, 2);
+		//datacontext.getMap(map, 2);
 		createPlayerOnMap();
 	}
 
@@ -52,6 +53,7 @@ define(['services/session', 'services/datacontext', 'plugins/router'], function 
 
 	function enterCommand() {
 		var thisInput = gameInput().toLowerCase();
+		console.log(!map());
 		if (isWielding()) {
 			var thisInt = parseInt(thisInput);
 			if (!isNaN(thisInt)) {
@@ -65,6 +67,12 @@ define(['services/session', 'services/datacontext', 'plugins/router'], function 
 				gameInput(null);
 				isWielding(false);
 			}
+		}
+		else if (!map() || isLoading()) {
+			console.log('NO MAP!');
+			datacontext.getMap(map, thisInput);
+			createPlayerOnMap();
+			isLoading(false);
 		}
 		else if (thisInput === 'right' || thisInput === 'r') {
 			gameInput(null);
@@ -100,7 +108,7 @@ define(['services/session', 'services/datacontext', 'plugins/router'], function 
 		}
 		else if (thisInput === '7' || thisInput === 'save') {
 			gameInput(null);
-			fight();
+			save();
 		}
 		else if (thisInput === '8' || thisInput === 'cast') {
 			gameInput(null);
@@ -109,6 +117,10 @@ define(['services/session', 'services/datacontext', 'plugins/router'], function 
 		else if (thisInput === '9' || thisInput === 'buy magic') {
 			gameInput(null);
 			buyMagic();
+		}
+		else if (thisInput === '10' || thisInput === 'load') {
+			gameInput(null);
+			loadDungeon(thisInput);
 		}
 		else if (thisInput === '11' || thisInput === 'buy hp') {
 			gameInput(null);
@@ -160,6 +172,10 @@ define(['services/session', 'services/datacontext', 'plugins/router'], function 
 		isOpening(true);
 	}
 
+	function save() {
+		datacontext.saveMapsAndTiles();
+	}
+
 	function search() {
 		// Ask which door to open
 		gameMessage("SEARCH.........SEARCH.........SEARCH.........");
@@ -204,6 +220,11 @@ define(['services/session', 'services/datacontext', 'plugins/router'], function 
 			setTimeout(gameMessage("HE IS OUT OF RANGE"), 100);
 		}, 200);
 		isSearching(true);
+	}
+
+	function loadDungeon() {
+		isLoading(true);
+		gameMessage("ENTER DUNGEON #");
 	}
 
 	function wield() {

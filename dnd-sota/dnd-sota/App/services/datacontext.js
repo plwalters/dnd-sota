@@ -21,7 +21,8 @@
         getTileByCoord: getTileByCoord,
         getMap: getMap,
         createPlayerPosition: createPlayerPosition,
-        findPlayerStart: findPlayerStart
+        findPlayerStart: findPlayerStart,
+        saveMapsAndTiles: saveMapsAndTiles
     };
     return datacontext;
 
@@ -58,6 +59,33 @@
             return observable(result[0]);
         }
         return result[0];
+    }
+
+    function saveMapsAndTiles() {        
+        var selectedMapsAndTiles = EntityQuery.from('Maps')
+            .where('id', '!=', 1)
+            .using(manager)
+            .toType('Map')
+            .executeLocally(); // cache-only query returns synchronously
+         console.log(selectedMapsAndTiles);
+         saveMapToLocalStorage(selectedMapsAndTiles);
+
+        function saveMapToLocalStorage(selectedMapsAndTiles) {
+            var exportData = manager.exportEntities(null, false);
+            saveToLocalStorage(exportData);
+        }
+
+    }
+
+    function saveToLocalStorage(data) {
+        console.log(data);
+        window.localStorage.setItem('dnd-sota', data);
+    }
+
+    function getFromLocalStorage() {
+        var importData = window.localStorage.getItem('dnd-sota');
+        ///manager.importEntities(importData);
+        manager.importEntities(importData, {mergeStrategy: breeze.MergeStrategy.OverwriteChanges});
     }
 
     function saveEntity(entity) {

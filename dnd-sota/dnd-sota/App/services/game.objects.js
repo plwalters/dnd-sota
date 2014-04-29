@@ -15,6 +15,12 @@
 		datacontext.createEntity('Armor', { name: 'TLTE MAIL', defense: 1, value: 50 } )
 	]);
 
+	var tileTypes = ko.observableArray([
+		datacontext.createEntity('TileType', { name: 'WALL', designerImage: '*', image: '*' } ),
+		datacontext.createEntity('TileType', { name: 'EMPTY', designerImage: '.', image: ' '} ),
+		datacontext.createEntity('TileType', { name: 'GOLD', designerImage: '$', image: '$'  } )
+	]);
+
 	var classTypes = ko.observableArray([	
 		datacontext.createEntity('ClassType', { name: 'FIGHTER', startingGold: 8 } ),
 		datacontext.createEntity('ClassType', { name: 'CLERIC', startingGold: 4 } ),
@@ -107,7 +113,8 @@
 		classTypes: classTypes,
 		attributes: attributes,
 		items: items,
-		maps: maps
+		maps: maps,
+		mapCreator: mapCreator
 	};
 	return models;
 

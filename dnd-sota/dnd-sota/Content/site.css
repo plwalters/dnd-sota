@@ -1,6 +1,7 @@
 ﻿body {
     padding-top: 50px;
     padding-bottom: 20px;
+    font-family: "Courier New", Courier, monospace;
 }
 
 /* Set padding to keep content from hitting the edges */
@@ -53,4 +54,17 @@ img.bg {
 
 .gameboard {
   padding-top: 50px;
+}
+
+input, textarea {  
+   font-family: inherit;
+   font-size: inherit;
+}
+
+textarea {
+    -webkit-box-sizing: border-box;
+       -moz-box-sizing: border-box;
+            box-sizing: border-box;
+            max-width: 800px !important;
+            min-height: 400px !important;
 }
