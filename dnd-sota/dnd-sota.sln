@@ -1,0 +1,36 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.30324.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "dnd_sota", "dnd-sota\dnd_sota.csproj", "{8F018F8A-12C7-4E36-A096-82F155AEAD2A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PublishScripts", "PublishScripts", "{E2CCF55C-2DC1-43CC-ABBB-2F2F69718118}"
+	ProjectSection(SolutionItems) = preProject
+		PublishScripts\AzureWebAppPublishModule.psm1 = PublishScripts\AzureWebAppPublishModule.psm1
+		PublishScripts\Publish-WebApplication.ps1 = PublishScripts\Publish-WebApplication.ps1
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Configurations", "Configurations", "{33315C40-44AB-4D7E-BCAF-D164C6AE5D2D}"
+	ProjectSection(SolutionItems) = preProject
+		PublishScripts\Configurations\dndsota-WAWS-dev.json = PublishScripts\Configurations\dndsota-WAWS-dev.json
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8F018F8A-12C7-4E36-A096-82F155AEAD2A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8F018F8A-12C7-4E36-A096-82F155AEAD2A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8F018F8A-12C7-4E36-A096-82F155AEAD2A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8F018F8A-12C7-4E36-A096-82F155AEAD2A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{33315C40-44AB-4D7E-BCAF-D164C6AE5D2D} = {E2CCF55C-2DC1-43CC-ABBB-2F2F69718118}
+	EndGlobalSection
+EndGlobal

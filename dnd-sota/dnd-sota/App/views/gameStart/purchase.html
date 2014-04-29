@@ -1,0 +1,24 @@
+<div class="row" data-bind="visible: state() > 0">
+	<div class="span2">
+
+	</div>
+	<div class="span8">		
+		<div>
+			<h5>BUYING WEAPONS</h5>
+			<div class="" data-bind="visible: state() === 1">
+				<h5>FAST OR NORM</h5>
+				<input data-bind="value: fastOrNorm, returnAction: chooseFastOrNorm, hasFocus: state() === 1, valueUpdate: 'afterkeydown'" />
+			</div>
+			<div class="" data-bind="visible: state() === 2">
+				<h5>NUMBER, ITEM, PRICE</h5>
+				<ul data-bind="foreach: weaponTypes">
+					<li data-bind="text: (id() + ', ' + name() + ', ' + value())"></li>
+				</ul>
+				<input data-bind="value: weaponName, returnAction: addWeapon, hasFocus: state() === 2, valueUpdate: 'afterkeydown'" />
+			</div>
+		</div>
+	</div>	
+	<div class="span2">
+
+	</div>
+</div>

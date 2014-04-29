@@ -1,0 +1,29 @@
+<div class="row" data-bind="visible: state() > 0">
+	<div class="span2">
+
+	</div>
+	<div class="span8">		
+		<div data-bind="with: character">
+			<h5>CHARACTER NAME</h5>
+			<input data-bind="value: name, returnAction: $parent.create, hasFocus: $parent.focusNameInput, valueUpdate: 'afterkeydown'" />
+		</div>
+	</div>	
+	<div class="span2">
+
+	</div>
+</div>
+<div class="row" data-bind="visible: state() > 1">
+	<div class="span2">
+
+	</div>
+	<div class="span8">		
+		<div data-bind="with: character">
+			<h5>WHICH DO YOU WANT TO BE</h5>
+			<h5 data-bind="text: $parent.classTypesString"></h5>
+			<input data-bind="value: $parent.className, returnAction: $parent.addClass, hasFocus: $parent.focusClassInput, valueUpdate: 'afterkeydown'" />
+		</div>
+	</div>	
+	<div class="span2">
+
+	</div>
+</div>
