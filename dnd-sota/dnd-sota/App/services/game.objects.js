@@ -116,6 +116,7 @@
 		attributes: attributes,
 		items: items,
 		maps: maps,
+		tileTypes: tileTypes,
 		mapCreator: mapCreator
 	};
 	return models;

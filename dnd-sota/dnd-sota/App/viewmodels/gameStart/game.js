@@ -22,7 +22,7 @@ define(['services/session', 'services/datacontext', 'plugins/router'], function 
 		'11 - BUY HP',
 		'0 - PASS;'
 	];
-	var gameMessage = ko.observable('WHICH DUNGEON # ');
+	var gameMessage = ko.observable('WHICH DUNGEON # (2 - DEFAULT) ');
 	var focusGameInput = ko.observable(false);
 
 	function activate() {
@@ -70,9 +70,10 @@ define(['services/session', 'services/datacontext', 'plugins/router'], function 
 			}
 		}
 		else if (!map() || isLoading()) {
-			console.log('NO MAP!');
 			datacontext.getMap(map, thisInput);
 			createPlayerOnMap();
+			gameMessage('ENTER COMMAND');
+			gameInput(null);
 			isLoading(false);
 		}
 		else if (thisInput === 'right' || thisInput === 'r') {

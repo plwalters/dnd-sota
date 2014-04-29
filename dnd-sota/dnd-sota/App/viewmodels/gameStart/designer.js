@@ -4,6 +4,7 @@ define(['services/session', 'services/game.objects', 'plugins/router', 'services
 	var nameValue = ko.observable();
 	var mapString = ko.observable();
 	var isNew = ko.observable(true);
+	var tileTypes = gameObjects.tileTypes;
 
 	function activate() {
 		console.log('Activating');
@@ -21,7 +22,8 @@ define(['services/session', 'services/game.objects', 'plugins/router', 'services
 		isNew: isNew,
 		create: create,
 		mapString: mapString,
-		save: save
+		save: save,
+		tileTypes: tileTypes
 	};
 	return designer;
 
