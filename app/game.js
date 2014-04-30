@@ -1,7 +1,7 @@
 window.dndSota = newGame();
 
 function newGame() {
-	console.log('Starting game')	;
+	
 }
 
 // Create all of the models

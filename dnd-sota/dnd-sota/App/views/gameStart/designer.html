@@ -1,13 +1,13 @@
 <div class="row">
-	<div class="span2">
+	<div class="span1">
 
 	</div>
 	<div class="span8">
 		<div class="row">
 			<h5>LEVEL DESIGNER</h5>
 			<div class="span12">
-				<label>MAP ID: </label><input data-bind="value: idValue" />
-				<label>MAP NAME: </label><input data-bind="value: nameValue" />
+				<label>MAP ID: </label><input data-bind="value: idValue, css: { 'invalid': idIsInvalid }" />
+				<label>MAP NAME: </label><input data-bind="value: nameValue, css: { 'invalid': nameIsInvalid }" />
 			</div>
 		</div>
 		<div class="row">
@@ -15,20 +15,27 @@
 		</div>
 		<div class="row">
 			<!-- ko if: isNew -->
-			<button data-bind="click: create">Create</button>
+			<button data-bind="click: create, enable: canSave">Create</button>
 			<!-- /ko -->
 			<!-- ko ifnot: isNew -->
-			<button data-bind="click: save">Save</button>
+			<button data-bind="click: save, enable: canSave">Save</button>
 			<!-- /ko -->
 		</div>
 	</div>	
-	<div class="span2">
+	<div class="span3">
 		<h3>AVAILABLE TILES:</h3>
 		<small>NAME : DESIGNER CHAR : OUTPUT</small>
-		<ul>
-			<li data-bind="foreach: tileTypes">
-				<strong><span data-bind="text: name"> : </span><span data-bind="text: designerImage"></span> : <span data-bind="text: image"></span></strong>
+		<ul data-bind="foreach: tileTypes">
+			<li>
+				<strong><span data-bind="text: name"></span> : <span data-bind="text: designerImage"></span> : <span data-bind="text: image"></span></strong>
 			</li>
-		</ul>
+		</ul>		
+		<div class="row">
+			<div class="span1"> </div>
+			<div class="span11">
+				<h3>EXAMPLE :</h3>
+				<textarea class="example" data-bind="value: exampleString" rows="7" cols="7" readonly="readonly"></textarea>
+			</div>
+		</div>
 	</div>
 </div>

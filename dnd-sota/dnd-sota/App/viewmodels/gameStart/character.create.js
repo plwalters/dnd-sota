@@ -51,7 +51,21 @@ define(['services/session', 'services/game.objects', 'plugins/router', 'services
 
 	function create () {
 		if (character() && character().name()) {
-			if (character().name() === 'SHAVS') {
+			if (character().name().toLowerCase() === 'shavs') {
+				datacontext.saveEntity(character());
+				state(2);
+				focusNameInput(false);
+				focusClassInput(true);
+				character().strength(makeRandom(15, 15));
+				character().dexterity(makeRandom(15, 15));
+				character().constitution(makeRandom(15, 15));
+				character().charisma(makeRandom(15, 15));
+				character().wisdom(makeRandom(15, 15));
+				character().intellect(makeRandom(15, 15));
+				character().gold(makeRandom(15,15)*15);
+				character().hitPoints(makeRandom(8, 8));
+				return true;
+			} else {
 				datacontext.saveEntity(character());
 				state(2);
 				focusNameInput(false);
@@ -64,11 +78,6 @@ define(['services/session', 'services/game.objects', 'plugins/router', 'services
 				character().intellect(makeRandom(1, 15));
 				character().gold(makeRandom(10,15)*15);
 				character().hitPoints(makeRandom(2, 8));
-				return true;
-			} else {
-				alert('How did you get access?');
-				character().name(null);
-				focusNameInput(true);
 			}
 		}
 	}
@@ -78,14 +87,11 @@ define(['services/session', 'services/game.objects', 'plugins/router', 'services
 	}
 
 	function addClass () {
-		console.log(className());
         if (character() && className()) {
-        	console.log(gameObjects.classTypes());
             var thisClass = ko.utils.arrayFirst(gameObjects.classTypes(), function (classobj) {
-                return classobj.name() === className();
+                return classobj.name().toLowerCase() === className().toLowerCase();
             });
-			console.log(thisClass);
-            if (!thisClass) { 
+            if (!thisClass) {
             	className(null);
             } else {
             	character().classType(thisClass);

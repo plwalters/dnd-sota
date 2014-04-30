@@ -67,7 +67,6 @@
             .using(manager)
             .toType('Map')
             .executeLocally(); // cache-only query returns synchronously
-         console.log(selectedMapsAndTiles);
          saveMapToLocalStorage(selectedMapsAndTiles);
 
         function saveMapToLocalStorage(selectedMapsAndTiles) {
@@ -78,7 +77,6 @@
     }
 
     function saveToLocalStorage(data) {
-        console.log(data);
         window.localStorage.setItem('dnd-sota', data);
     }
 

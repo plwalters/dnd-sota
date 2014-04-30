@@ -15,7 +15,6 @@ define(['services/session', 'services/game.objects', 'plugins/router', 'services
 	});
 
 	function activate() {
-		console.log('Activating');
 		player(session.currentPlayer());
 		// If there is no player kick back to character creation
 		if (!player()) {
@@ -46,9 +45,9 @@ define(['services/session', 'services/game.objects', 'plugins/router', 'services
 	function chooseFastOrNorm() {		
 		if (fastOrNorm()) {
 			if (fastOrNorm() === 'FAST') {
-				console.log('Show only fast');
+				console.log("IT DOESN'T MATTER WHAT YOU TYPE!");
 			} else {
-				console.log('Show only normal');
+				console.log("IT DOESN'T MATTER WHAT YOU TYPE!");
 			}
 			return state(2);
 		}
@@ -56,17 +55,15 @@ define(['services/session', 'services/game.objects', 'plugins/router', 'services
 
 	function addItem() {
 		if (itemName()) {
+			var thisItemName = itemName().toLowerCase();
 			// Check if it is the exit code
-			if (state() === 3 && itemName() === '-1' || state() === 3 && itemName() === 'DONE') {				
+			if (state() === 3 && thisItemName === '-1' || state() === 3 && thisItemName === 'done') {				
             	return router.navigate('game'); 
 			}
 			// Try to get the weapon by name first
             var thisItem = ko.utils.arrayFirst(items(), function (item) {
-            	console.log(item.name());
-            	console.log(itemName());
-                return item.name() === itemName();
+                return item.name().toLowerCase() === thisItemName;
             });
-            console.log(thisItem);
             if (!thisItem) {
             	// Try to get the weapon by id instead of name
             	thisItem = ko.utils.arrayFirst(items(), function (item) {
@@ -91,18 +88,19 @@ define(['services/session', 'services/game.objects', 'plugins/router', 'services
 
 	function addWeapon() {
 		if (weaponName()) {
+			var thisWeaponName = weaponName().toLowerCase();
 			// Check if it is going to buy items instead now
-			if (weaponName() === '-1' || weaponName() === 'DONE') {				
+			if (thisWeaponName === '-1' || thisWeaponName === 'done') {				
 				state(3);
 			}
 			// Try to get the weapon by name first
             var thisWeapon = ko.utils.arrayFirst(gameObjects.weapons(), function (weapon) {
-                return weapon.name() === weaponName();
+                return weapon.name().toLowerCase() === thisWeaponName;
             });
             if (!thisWeapon) {
             	// Try to get the weapon by id instead of name
             	thisWeapon = ko.utils.arrayFirst(gameObjects.weapons(), function (weapon) {
-	                return weapon.id() == weaponName();
+	                return weapon.id() == thisWeaponName;
 	            });
 	            if (!thisWeapon) {
             		weaponName(null);

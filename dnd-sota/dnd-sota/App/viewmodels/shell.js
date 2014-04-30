@@ -10,7 +10,7 @@
 
     function activate () {
     	if (!initialized) {
-    		console.log(gameObjects);
+            
     	}
         router.map([
             { route: '', title:'Game', moduleId: 'viewmodels/gameStart/character.create', nav: true },

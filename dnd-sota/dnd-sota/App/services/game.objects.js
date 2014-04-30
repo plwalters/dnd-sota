@@ -20,7 +20,8 @@
 		datacontext.createEntity('TileType', { name: 'EMPTY', designerImage: '.', image: ' '} ),
 		datacontext.createEntity('TileType', { name: 'GOLD', designerImage: '$', image: '$'  } ),
 		datacontext.createEntity('TileType', { name: 'ENEMY', designerImage: 'E', image: 'E'  } ),
-		datacontext.createEntity('TileType', { name: 'DOOR', designerImage: 'D', image: 'D'  } )
+		datacontext.createEntity('TileType', { name: 'DOOR', designerImage: 'D', image: 'D'  } ),
+		datacontext.createEntity('TileType', { name: 'LINE END', designerImage: ',', image: ' '  } )
 	]);
 
 	var classTypes = ko.observableArray([	
@@ -45,7 +46,8 @@
 		datacontext.createEntity('Item', { id: 10, name: 'SILVER CROSS', value: 25, canBuy: true } ),
 		datacontext.createEntity('Item', { id: 11, name: 'SPARE FOOD', value: 5, canBuy: true } ),
 		datacontext.createEntity('Item', { id: 12, name: 'ARROWS', value: 15, canBuy: true } ),
-		datacontext.createEntity('Item', { id: 13, name: 'GOLD', value: 25, canBuy: false } )
+		datacontext.createEntity('Item', { id: 13, name: 'GOLD', value: 25, canBuy: false } ),
+		datacontext.createEntity('Item', { id: 14, name: 'DOOR', value: 0, canBuy: false } )
 	]);
 
 	var goldItem = items()[6];
@@ -69,7 +71,7 @@
 	var fourthMap = {
 		id: 2,
 		name: "Second",
-		layout: "**************,*U...........*,*...........$*,******..******,*............*,*...........$*,*..***********,*....****....*,*....****....*,*............*,**************"
+		layout: "**************,*U...........*,*......E....$*,**D***..******,D............*,*....E......$*,*..***********,*....****....*,*....****....*,*............*,**************"
 	}
 
 	mapCreator(fourthMap);
@@ -79,6 +81,7 @@
 		var xvar = 1;
 		var yvar = 1;
 		var itemId = 1;
+		var enemyId = 1;
 		for (var i = 0; i < thisLayout.length; i++) {
 			var thisTile = thisLayout.charAt(i);
 			if (thisTile === '*') {
@@ -100,9 +103,23 @@
 	        	thisTile.item(thisTileItem);
 	        	itemId += 1;
 				xvar += 1;
+			} else if (thisTile === 'E') {
+				// Create an enemy start tile
+				var thisTile = datacontext.createEntity('Tile', { name: 'Tile', mapId: thisMap.id, occupied: true, x: xvar, y: yvar, image: "E" } );
+	        	var thisTileEnemy = datacontext.createComplexType('TileEnemy', { id: enemyId, name: "GOBLIN", hitPoints: 10, damage: 2 });
+	        	thisTile.enemy(thisTileEnemy);
+	        	enemyId += 1;
+				xvar += 1;
+			} else if (thisTile === 'D') {
+				// Create an door start tile
+				var thisTile = datacontext.createEntity('Tile', { name: 'Tile', mapId: thisMap.id, occupied: true, x: xvar, y: yvar, image: "D" } );
+	        	var thisTileItem = datacontext.createComplexType('TileItem', { id: itemId, name: "DOOR" });
+	        	thisTile.item(thisTileItem);
+	        	itemId += 1;
+				xvar += 1;
 			} else if (thisTile === ',') {
 				// Start a new row
-				xvar = 0;
+				xvar = 1;
 				yvar += 1;
 			}
 		}

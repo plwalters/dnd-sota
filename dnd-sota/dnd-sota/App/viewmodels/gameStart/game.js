@@ -9,6 +9,8 @@ define(['services/session', 'services/datacontext', 'plugins/router'], function 
 	var isBuyingMagic = ko.observable();
 	var isWielding = ko.observable();
 	var isLoading = ko.observable();
+	var mapHeight = ko.observable(10);
+	var mapWidth = ko.observable(10);
 	var instructions = [
 		'U,D,L,R - MOVE',
 		'2 - OPEN DOOR',
@@ -25,6 +27,42 @@ define(['services/session', 'services/datacontext', 'plugins/router'], function 
 	var gameMessage = ko.observable('WHICH DUNGEON # (2 - DEFAULT) ');
 	var focusGameInput = ko.observable(false);
 
+	var centeredMap = ko.computed(function () {
+		var thisMap = {};
+		if (player() && map()) {
+			var playerPosition = player().position();
+			var mapTop = playerPosition.y() + Math.ceil(mapHeight()/2);
+			var mapLeft = playerPosition.x() - Math.ceil(mapWidth()/2);
+			var mapBottom = mapTop - mapHeight();
+			var mapRight = mapLeft + mapWidth();
+		    var rowSort = function (l, r) { return (l.x() == r.x()) ? (l.x() > r.x() ? 1 : -1) : (l.x() > r.x() ? 1 : -1) };
+	    	thisMap.rows = ko.computed(function () {
+	    		var theseTiles = map().tiles();
+	    		var rowsArray = [];
+	    		var finalRows = [];
+	    		ko.utils.arrayForEach(theseTiles, function (tile) {
+	    			// If the tiles Y is greater than or equal to map left and the rows array doesn't have this row coord yet,
+	    			if (tile.y() >= mapBottom && tile.y() <= mapTop && rowsArray.indexOf(tile.y()) === -1) {
+	    				// Add it
+	    				rowsArray.push(tile.y());
+	    			}
+	    		});
+	    		// For each row,
+	    		ko.utils.arrayForEach(rowsArray, function (row) {
+	    			// return each tile in the row
+	    			var draftRow = ko.utils.arrayFilter(theseTiles, function (tile) {
+	    				return (tile.x() >= mapLeft && tile.x() <= mapRight && row === tile.y());
+	    			}).sort(rowSort);
+	    			finalRows.push(draftRow);
+	    		});
+	    		return finalRows;
+	    	}).extend({ throttle: 25 });			
+		} else {
+			thisMap.rows = ko.observableArray([]);
+		}
+    	return thisMap;
+	});
+
 	function activate() {
 		player(session.currentPlayer());
 		// Go get the current map
@@ -39,7 +77,7 @@ define(['services/session', 'services/datacontext', 'plugins/router'], function 
 		focusGameInput(true);
 	};
 
-	var purchase = {
+	var game = {
 		activate: activate,
 		compositionComplete: compositionComplete,
 		enterCommand: enterCommand,
@@ -48,13 +86,13 @@ define(['services/session', 'services/datacontext', 'plugins/router'], function 
 		instructions: instructions,
 		gameMessage: gameMessage,
 		map: map,
-		player: player
+		player: player,
+		centeredMap: centeredMap
 	};
-	return purchase;
+	return game;
 
 	function enterCommand() {
 		var thisInput = gameInput().toLowerCase();
-		console.log(!map());
 		if (isWielding()) {
 			var thisInt = parseInt(thisInput);
 			if (!isNaN(thisInt)) {
@@ -77,18 +115,34 @@ define(['services/session', 'services/datacontext', 'plugins/router'], function 
 			isLoading(false);
 		}
 		else if (thisInput === 'right' || thisInput === 'r') {
+			if (isOpening()) {
+				openDoorDirection('r');
+				return true;
+			}
 			gameInput(null);
 			moveRight();
 		}
 		else if (thisInput === 'left' || thisInput === 'l') {
+			if (isOpening()) {
+				openDoorDirection('l');
+				return true;
+			}
 			gameInput(null);
 			moveLeft();
 		}
 		else if (thisInput === 'up' || thisInput === 'u') {
+			if (isOpening()) {
+				openDoorDirection('u');
+				return true;
+			}
 			gameInput(null);
 			moveUp();
 		}
 		else if (thisInput === 'down' || thisInput === 'd') {
+			if (isOpening()) {
+				openDoorDirection('d');
+				return true;
+			}
 			gameInput(null);
 			moveDown();
 		}
@@ -174,6 +228,44 @@ define(['services/session', 'services/datacontext', 'plugins/router'], function 
 		isOpening(true);
 	}
 
+	function openDoorDirection(dir) {
+		var thisPlayerPosition = player().position();
+		if (dir === 'd') {
+			checkOpenDoor(thisPlayerPosition.x(), thisPlayerPosition.y() + 1);
+		} else if (dir === 'u') {
+			checkOpenDoor(thisPlayerPosition.x(), thisPlayerPosition.y() - 1);
+		} else if (dir === 'l') {
+			checkOpenDoor(thisPlayerPosition.x() - 1, thisPlayerPosition.y());
+		} else if (dir === 'r') {
+			checkOpenDoor(thisPlayerPosition.x() + 1, thisPlayerPosition.y());
+		}
+	}
+
+	function checkOpenDoor(newX, newY) {
+		if (player()) {
+			var currentPosition = player().position();
+			var newTile = datacontext.getTileByCoord(null, newX, newY, map().id());
+			// Check for obstruction
+			if (newTile) {
+				if (checkIfDoor(newTile)) {
+					clearTile(newTile);
+					isOpening(false);
+					gameInput(null);
+				} else {
+					alert('THERE ISNT A DOOR THERE...');
+				}
+			}
+		}		
+	}
+
+	function checkIfDoor(tile) {
+		if (tile.item() && tile.item().name() === 'DOOR') {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
 	function save() {
 		datacontext.saveMapsAndTiles();
 	}
@@ -213,15 +305,19 @@ define(['services/session', 'services/datacontext', 'plugins/router'], function 
 
 	function fight() {
 		// Ask what to fight
-		gameMessage("YOUR WEAPON IS " + player().weapon().name());
-		setTimeout(function () {
-			// Get enemy name
-			setTimeout(gameMessage("GOBLIN"), 100);
-			setTimeout(gameMessage("HP=26"), 100);
-			setTimeout(gameMessage("SWING"), 100);
-			setTimeout(gameMessage("HE IS OUT OF RANGE"), 100);
-		}, 200);
-		isSearching(true);
+		if (player().weapon()) {
+			gameMessage("YOUR WEAPON IS " + player().weapon().name());
+			setTimeout(function () {
+				// Get enemy name
+				setTimeout(gameMessage("GOBLIN"), 100);
+				setTimeout(gameMessage("HP=26"), 100);
+				setTimeout(gameMessage("SWING"), 100);
+				setTimeout(gameMessage("HE IS OUT OF RANGE"), 100);
+			}, 200);
+			isSearching(true);	
+		} else {
+			gameMessage("YOU DONT HAVE A WEAPON");
+		}
 	}
 
 	function loadDungeon() {
@@ -278,6 +374,11 @@ define(['services/session', 'services/datacontext', 'plugins/router'], function 
 	function clearTile (tile) {
 		tile.occupied(false);
 		tile.image(" ");
+		if (tile.item()) {
+			tile.item().id(null);
+			tile.item().name(null);
+			tile.item().value(null);			
+		}
 	}
 
 	function occupyTile (tile) {
