@@ -4,7 +4,8 @@
         'durandal': '../Scripts/durandal',
         'plugins': '../Scripts/durandal/plugins',
         'transitions': '../Scripts/durandal/transitions'
-    }
+    },
+    urlArgs: 'v=0.0.0.1'
 });
 
 define('jquery', function() { return jQuery; });

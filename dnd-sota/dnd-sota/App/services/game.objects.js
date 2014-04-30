@@ -1,4 +1,4 @@
-﻿define(['services/datacontext'], function (datacontext) {
+﻿	define(['services/datacontext'], function (datacontext) {
 
 	var weapons = ko.observableArray([	
 		datacontext.createEntity('Weapon', { id: 1, name: 'SWORD', damage: 1, value: 10 } ),

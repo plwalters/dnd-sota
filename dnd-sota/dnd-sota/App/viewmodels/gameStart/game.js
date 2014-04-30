@@ -9,6 +9,7 @@ define(['services/session', 'services/datacontext', 'plugins/router'], function 
 	var isBuyingMagic = ko.observable();
 	var isWielding = ko.observable();
 	var isLoading = ko.observable();
+	var isFighting = ko.observable();
 	var mapHeight = ko.observable(10);
 	var mapWidth = ko.observable(10);
 	var instructions = [
@@ -117,6 +118,9 @@ define(['services/session', 'services/datacontext', 'plugins/router'], function 
 		else if (thisInput === 'right' || thisInput === 'r') {
 			if (isOpening()) {
 				openDoorDirection('r');
+				return true;
+			} else if (isFighting()) {
+				fightDirection('r');
 				return true;
 			}
 			gameInput(null);
@@ -241,6 +245,52 @@ define(['services/session', 'services/datacontext', 'plugins/router'], function 
 		}
 	}
 
+	function fightDirection(dir) {
+		var thisPlayerPosition = player().position();
+		if (dir === 'd') {
+			checkForEnemy(thisPlayerPosition.x(), thisPlayerPosition.y() + 1);
+		} else if (dir === 'u') {
+			checkForEnemy(thisPlayerPosition.x(), thisPlayerPosition.y() - 1);
+		} else if (dir === 'l') {
+			checkForEnemy(thisPlayerPosition.x() - 1, thisPlayerPosition.y());
+		} else if (dir === 'r') {
+			checkForEnemy(thisPlayerPosition.x() + 1, thisPlayerPosition.y());
+		}
+	}
+
+	function checkForEnemy (newX, newY) {
+		if (player()) {
+			var currentPosition = player().position();
+			var newTile = datacontext.getTileByCoord(null, newX, newY, map().id());
+			// Check for obstruction
+			if (newTile) {
+				if (checkIfEnemy(newTile)) {
+					newTile.enemy().hipPoints(newTile.enemy().hipPoints() - player().weapon().damage());
+					if (newTile.enemy().hipPoints() < 0) {
+						gameMessage('ENEMY KILLED!');
+						newTile.enemy().name(null);
+						newTile.enemy().hitPoints(null);
+						newTile.enemy().damage(null);
+						newTile.occupied(false);
+					} else {
+						gameMessage('ENEMY HITPOINTS IS NOW ' + newTile.enemy().hipPoints());
+						gameInput(null);
+					}
+				} else {
+					alert('THERE ISNT AN ENEMY THERE...');
+				}
+			}
+		}		
+	}
+
+	function checkIfEnemy(tile) {
+		if (tile.enemy()) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
 	function checkOpenDoor(newX, newY) {
 		if (player()) {
 			var currentPosition = player().position();
@@ -307,14 +357,8 @@ define(['services/session', 'services/datacontext', 'plugins/router'], function 
 		// Ask what to fight
 		if (player().weapon()) {
 			gameMessage("YOUR WEAPON IS " + player().weapon().name());
-			setTimeout(function () {
-				// Get enemy name
-				setTimeout(gameMessage("GOBLIN"), 100);
-				setTimeout(gameMessage("HP=26"), 100);
-				setTimeout(gameMessage("SWING"), 100);
-				setTimeout(gameMessage("HE IS OUT OF RANGE"), 100);
-			}, 200);
-			isSearching(true);	
+			gameMessage("WHICH DIRECTION TO ATTACK?");
+			isFighting(true);
 		} else {
 			gameMessage("YOU DONT HAVE A WEAPON");
 		}
