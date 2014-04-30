@@ -54,7 +54,8 @@
 	                id: { dataType: "Int64", isPartOfKey: true },
 	                name: { dataType: "String" },
 	                hitPoints: { dataType: "Int64" },
-	                damage: { dataType: "Int64" }
+	                damage: { dataType: "Int64" },
+		            position: { complexTypeName: "Position:#DndSota", isScalar: true }
 	            }
 	        });
 
@@ -68,7 +69,8 @@
 	                name: { dataType: "String" },
 	                damage: { dataType: "Int64" },
 	                value: { dataType: "Int64" },
-	                playerId: { dataType: "Int64" }
+	                playerId: { dataType: "Int64" },
+	                range: { dataType: "Int64" }
 	            },
 	            navigationProperties: {
 					player: {
@@ -189,7 +191,8 @@
 	            	id: { dataType: "Int64" },
 	            	name: { dataType: "String" },
 	                hitPoints: { dataType: "Int64" },
-	                damage: { dataType: "Int64" }
+	                damage: { dataType: "Int64" },
+		            position: { complexTypeName: "Position:#DndSota", isScalar: true }
 	            }
 	        });
 

@@ -1,12 +1,12 @@
 ﻿	define(['services/datacontext'], function (datacontext) {
 
 	var weapons = ko.observableArray([	
-		datacontext.createEntity('Weapon', { id: 1, name: 'SWORD', damage: 1, value: 10 } ),
-		datacontext.createEntity('Weapon', { id: 2, name: '2-H-SWORD', damage: 1, value: 15 } ),
-		datacontext.createEntity('Weapon', { id: 3, name: 'DAGGER', damage: 1, value: 3 } ),
-		datacontext.createEntity('Weapon', { id: 4, name: 'MACE', damage: 1, value: 15 } ),
-		datacontext.createEntity('Weapon', { id: 5, name: 'SPEAR', damage: 1, value: 15 } ),
-		datacontext.createEntity('Weapon', { id: 6, name: 'BOW', damage: 1, value: 15 } )
+		datacontext.createEntity('Weapon', { id: 1, name: 'SWORD', damage: 5, value: 10, range: 1 } ),
+		datacontext.createEntity('Weapon', { id: 2, name: '2-H-SWORD', damage: 5, value: 15, range: 1 } ),
+		datacontext.createEntity('Weapon', { id: 3, name: 'DAGGER', damage: 3, value: 3, range: 3 } ),
+		datacontext.createEntity('Weapon', { id: 4, name: 'MACE', damage: 6, value: 15, range: 1 } ),
+		datacontext.createEntity('Weapon', { id: 5, name: 'SPEAR', damage: 7, value: 15, range: 5 } ),
+		datacontext.createEntity('Weapon', { id: 6, name: 'BOW', damage: 3, value: 15, range: 5 } )
 	]);
 
 	var armors = ko.observableArray([
@@ -45,7 +45,7 @@
 		datacontext.createEntity('Item', { id: 9, name: 'FLASK OF OIL', value: 2, canBuy: true } ),
 		datacontext.createEntity('Item', { id: 10, name: 'SILVER CROSS', value: 25, canBuy: true } ),
 		datacontext.createEntity('Item', { id: 11, name: 'SPARE FOOD', value: 5, canBuy: true } ),
-		datacontext.createEntity('Item', { id: 12, name: 'ARROWS', value: 15, canBuy: true } ),
+		datacontext.createEntity('Item', { id: 12, name: 'ARROWS', value: 15, quantity: 15, canBuy: true } ),
 		datacontext.createEntity('Item', { id: 13, name: 'GOLD', value: 25, canBuy: false } ),
 		datacontext.createEntity('Item', { id: 14, name: 'DOOR', value: 0, canBuy: false } )
 	]);
@@ -104,11 +104,12 @@
 	        	itemId += 1;
 				xvar += 1;
 			} else if (thisTile === 'E') {
-				// Create an enemy start tile
-				var thisTile = datacontext.createEntity('Tile', { name: 'Tile', mapId: thisMap.id, occupied: true, x: xvar, y: yvar, image: "E" } );
-	        	var thisTileEnemy = datacontext.createComplexType('TileEnemy', { id: enemyId, name: "GOBLIN", hitPoints: 10, damage: 2 });
-	        	thisTile.enemy(thisTileEnemy);
-	        	enemyId += 1;
+				// Create an enemy start tile that is empty until the enemy is spawned
+				var thisTile = datacontext.createEntity('Tile', { name: 'Tile', mapId: thisMap.id, occupied: false, x: xvar, y: yvar, image: "@" } );
+				// Don't create the enemy on spawn, let the game do that
+	        	// var thisTileEnemy = datacontext.createComplexType('TileEnemy', { id: enemyId, name: "GOBLIN", hitPoints: 10, damage: 2 });
+	        	// thisTile.enemy(thisTileEnemy);
+	        	// enemyId += 1;
 				xvar += 1;
 			} else if (thisTile === 'D') {
 				// Create an door start tile

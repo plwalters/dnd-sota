@@ -5,7 +5,7 @@
         'plugins': '../Scripts/durandal/plugins',
         'transitions': '../Scripts/durandal/transitions'
     },
-    urlArgs: 'v=0.0.0.1'
+    urlArgs: 'v=0.0.0.2'
 });
 
 define('jquery', function() { return jQuery; });

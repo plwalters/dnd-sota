@@ -24,6 +24,7 @@
                 msViewportStyle.appendChild(document.createTextNode(mq));
                 document.getElementsByTagName("head")[0].appendChild(msViewportStyle);
             }
+            @{var appVersion = "App/main-built.js?v=" + (ViewContext.Controller.GetType().Assembly.GetName().Version);}
         </script>
     </head>
     <body>
@@ -36,7 +37,14 @@
             <p>&copy; @DateTime.Now.Year - Richard Garriott</p>
         </footer>
         
-        @Scripts.Render("~/Scripts/vendorscripts")
-        <script type="text/javascript" src="~/Scripts/require.js" data-main="/App/main"></script>
+                @Scripts.Render("~/Scripts/vendorscripts")
+                @if (HttpContext.Current.IsDebuggingEnabled)
+                {
+                    <script type="text/javascript" src="~/Scripts/require.js" data-main="@Url.Content("~/App/main")"></script>
+                }
+                else
+                {
+                    <script type="text/javascript" src=@appVersion></script>
+                }
     </body>
 </html>

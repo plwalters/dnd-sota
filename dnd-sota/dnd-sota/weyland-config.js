@@ -1,13 +1,16 @@
 exports.config = function(weyland) {
     weyland.build('main')
         .task.jshint({
+            exclude: ['App/main-built.js', 'App/viewmodels/start.js'],
             include:'App/**/*.js'
         })
         .task.uglifyjs({
+            exclude: ['App/main-built.js', 'App/viewmodels/start.js'],
             include:['App/**/*.js', 'Scripts/durandal/**/*.js']
         })
         .task.rjs({
-            include:['App/**/*.{js,html}', 'Scripts/durandal/**/*.js'],
+            include: ['App/**/*.{js,html}', 'Scripts/durandal/**/*.js'],
+            exclude: ['App/main-built.js', 'App/viewmodels/start.js'],
             loaderPluginExtensionMaps:{
                 '.html':'text'
             },
@@ -22,7 +25,7 @@ exports.config = function(weyland) {
                     'plugins': '../Scripts/durandal/plugins',
                     'transitions': '../Scripts/durandal/transitions',
                     'knockout': 'empty:',
-                    'bootstrap': 'empty:',
+                    //'bootstrap': 'empty:',
                     'jquery': 'empty:'
                 },
                 inlineText: true,

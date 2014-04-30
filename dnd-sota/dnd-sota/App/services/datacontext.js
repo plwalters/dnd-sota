@@ -21,7 +21,9 @@
         getTileByCoord: getTileByCoord,
         getMap: getMap,
         createPlayerPosition: createPlayerPosition,
+        createEnemyPosition: createEnemyPosition,
         findPlayerStart: findPlayerStart,
+        findEnemy: findEnemy,
         saveMapsAndTiles: saveMapsAndTiles
     };
     return datacontext;
@@ -91,7 +93,23 @@
     }
 
     function findPlayerStart(mapId) {
-           var imagePred = new Predicate('image', '==', 'U');
+       var imagePred = new Predicate('image', '==', 'U');
+        var mapPred = new Predicate('mapId', '==', mapId);
+
+        // Make a total predicate to find the tile
+        var totalPred = mapPred.and(imagePred);
+
+        // Get the tile by coordinates and map
+        var query = EntityQuery.from('Tiles')
+            .toType('Tile')
+            .where(totalPred);
+
+        var result = manager.executeQueryLocally(query);
+        return result[0];
+    }
+
+    function findEnemy(mapId) {
+        var imagePred = new Predicate('image', '==', '@');
         var mapPred = new Predicate('mapId', '==', mapId);
 
         // Make a total predicate to find the tile
@@ -109,6 +127,11 @@
     function createPlayerPosition(player, xvar, yvar) {
         var thisPosition = createComplexType('Position', { x: xvar, y: yvar });
         player.position(thisPosition);
+    }
+
+    function createEnemyPosition(enemy, xvar, yvar) {
+        var thisPosition = createComplexType('Position', { x: xvar, y: yvar });
+        enemy.position(thisPosition);
     }
 
     function createEntity(entityType, constructorProperties) {
