@@ -14,6 +14,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Configurations", "Configurations", "{33315C40-44AB-4D7E-BCAF-D164C6AE5D2D}"
 	ProjectSection(SolutionItems) = preProject
 		PublishScripts\Configurations\dndsota-WAWS-dev.json = PublishScripts\Configurations\dndsota-WAWS-dev.json
+		dndsota-WAWS-dev.json = dndsota-WAWS-dev.json
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{BA60E47E-F8CD-448F-A3E0-DAB409B925C1}"
