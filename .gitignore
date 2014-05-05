@@ -101,6 +101,12 @@ _NCrunch_*
 *.mm.*
 AutoTest.Net/
 
+# Publishing stuff
+dnd-sota/PublishScripts
+
+# Web.configs
+*.config
+
 # Web workbench (sass)
 .sass-cache/
 

@@ -4,7 +4,12 @@
 	</div>
 	<div class="span8">
 		<div class="row">
-			<h3 data-bind="text: gameMessage"></h3>
+			<!-- ko if: gameMessage -->
+			<h3 data-bind="text: gameMessage().Message"></h3>
+			<!-- /ko -->
+			<!-- ko ifnot: gameMessage -->
+			<h3>ENTER COMMAND</h3>
+			<!-- /ko -->
 		</div>
 		<div class="row">
 			<input data-bind="value: gameInput, returnAction: enterCommand, hasFocus: focusGameInput, valueUpdate: 'afterkeydown'" />

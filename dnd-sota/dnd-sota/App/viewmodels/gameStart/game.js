@@ -1,4 +1,4 @@
-define(['services/session', 'services/datacontext', 'plugins/router'], function (session, datacontext, router) {
+define(['services/session', 'services/datacontext', 'plugins/router', 'services/messager.queue'], function (session, datacontext, router, messageQueue) {
 
 	var player = ko.observable();
 	var map = ko.observable();
@@ -26,7 +26,8 @@ define(['services/session', 'services/datacontext', 'plugins/router'], function 
 		'11 - BUY HP',
 		'0 - PASS;'
 	];
-	var gameMessage = ko.observable('WHICH DUNGEON # (2 - DEFAULT) ');
+	// Set the game message equal to the current message in the message queue
+	var gameMessage = ko.computed(messageQueue.currentMessage;
 	var focusGameInput = ko.observable(false);
 
 	var centeredMap = ko.computed(function () {
@@ -101,9 +102,9 @@ define(['services/session', 'services/datacontext', 'plugins/router'], function 
 					var thisWeapon = player().weapons()[thisInt - 1];
 					if (thisWeapon) {
 						player().weapon(thisWeapon);
-						gameMessage('YOU HAVE EQUIPPED A ' + thisWeapon.name());
+						messageQueue.addMessage('YOU HAVE EQUIPPED A ' + thisWeapon.name(), false);
 					} else {
-						gameMessage('SORRY YOU DONT HAVE THAT WEAPON');
+						messageQueue.addMessage('SORRY YOU DONT HAVE THAT WEAPON', false);
 					}
 					gameInput(null);
 					isWielding(false);
@@ -111,9 +112,11 @@ define(['services/session', 'services/datacontext', 'plugins/router'], function 
 			}
 			else if (!map() || isLoading()) {
 				datacontext.getMap(map, thisInput);
+				if (!map()) {
+					alert('MAP NOT FOUND!');
+				}
 				createPlayerOnMap();
 				createEnemy();
-				gameMessage('ENTER COMMAND');
 				gameInput(null);
 				isLoading(false);
 			}
@@ -190,7 +193,7 @@ define(['services/session', 'services/datacontext', 'plugins/router'], function 
 				pass();
 			}
 			else {
-				gameMessage('COME ON');
+				messageQueue.addMessage('COME ON', false);
 				gameInput(null);
 			}			
 		}
@@ -199,15 +202,19 @@ define(['services/session', 'services/datacontext', 'plugins/router'], function 
 	function createPlayerOnMap() {
 		if (map()) {
 			var startPosition = datacontext.findPlayerStart(map().id());
-			datacontext.createPlayerPosition(player(), startPosition.x(), startPosition.y());
-			if (player()) {
-				var currentPosition = player().position();
-				var thisTile = datacontext.getTileByCoord(null, currentPosition.x(), currentPosition.y(), map().id());
-				if (thisTile) {
-					thisTile.image('U');
-					thisTile.occupied(true);
-				}
-			}	
+			if (!startPosition) {
+				alert('NO PLAYER START POSITION FOUND ON THIS MAP!');
+			} else {			
+				datacontext.createPlayerPosition(player(), startPosition.x(), startPosition.y());
+				if (player()) {
+					var currentPosition = player().position();
+					var thisTile = datacontext.getTileByCoord(null, currentPosition.x(), currentPosition.y(), map().id());
+					if (thisTile) {
+						thisTile.image('U');
+						thisTile.occupied(true);
+					}
+				}		
+			}
 		}
 	}
 
@@ -228,7 +235,7 @@ define(['services/session', 'services/datacontext', 'plugins/router'], function 
 
 	function openDoor() {
 		// Ask which door to open
-		gameMessage("DOOR LEFT RIGHT UP OR DOWN");
+		messageQueue.addMessage('DOOR LEFT RIGHT UP OR DOWN', true);
 		isOpening(true);
 	}
 
@@ -256,7 +263,7 @@ define(['services/session', 'services/datacontext', 'plugins/router'], function 
 					isOpening(false);
 					gameInput(null);
 				} else {
-					alert('THERE ISNT A DOOR THERE...');
+					messageQueue.addMessage('THERE ISNT A DOOR THERE...', false);
 				}
 			}
 		}		
@@ -276,7 +283,7 @@ define(['services/session', 'services/datacontext', 'plugins/router'], function 
 
 	function search() {
 		// Ask which door to open
-		gameMessage("SEARCH.........SEARCH.........SEARCH.........");
+		messageQueue.addMessage('SEARCH.........SEARCH.........SEARCH.........', false);
 		isSearching(true);
 	}
 
@@ -284,26 +291,26 @@ define(['services/session', 'services/datacontext', 'plugins/router'], function 
 		// Ask which door to open
 		gameMessage("MAGIC");
 		if (player().weapon()) {
-			setTimeout(gameMessage("YOU CANT USE MAGIC WITH WEAPON IN HAND"), 100);
+			messageQueue.addMessage('YOU CANT USE MAGIC WITH WEAPON IN HAND', false);
 		} else {
-			setTimeout(gameMessage("YOU CANT USE MAGIC WITH WEAPON IN HAND"), 100);
+			messageQueue.addMessage('YOU CANT USE MAGIC WITH WEAPON IN HAND', false);
 		}
 	}
 
 	function buyMagic() {
 		// Ask which door to open
 		if (player().classType().name() === 'FIGHTER') {
-			setTimeout(gameMessage("YOU CANT BUY ANY"), 100);
+			messageQueue.addMessage('YOU CANT BUY ANY', false);
 		} else {
 			// else ask it what to buy or something
-			setTimeout(gameMessage("BUY WHICH"), 100);
+			messageQueue.addMessage('BUY WHICH', false);
 			isBuyingMagic(true);
 		}
 	}
 
 	function buyHP() {
 		// Ask how much HP
-		gameMessage("HOW MANY 200 GP. EACH");
+		messageQueue.addMessage('HOW MANY 200 GP. EACH', false);
 		isBuyingHP(true);
 	}
 
@@ -311,12 +318,12 @@ define(['services/session', 'services/datacontext', 'plugins/router'], function 
 		var thisWeapon = player().weapon();
 		// Ask what to fight
 		if (thisWeapon) {
-			gameMessage("YOUR WEAPON IS " + thisWeapon.name());
+			messageQueue.addMessage("YOUR WEAPON IS " + thisWeapon.name(), false);
 			var enemyTile = findEnemy();
 			var playerTile = findPlayer();
 			var dist = getDistanceBetweenTiles(playerTile, enemyTile);
 			if (dist > thisWeapon.range()) {
-				gameMessage("ENEMY IS TOO FAR AWAY");
+				messageQueue.addMessage("ENEMY IS TOO FAR AWAY", false);
 			} else {
 				isFighting(true);
 				// set isFighting to true which makes monster chase you and attack
@@ -332,7 +339,7 @@ define(['services/session', 'services/datacontext', 'plugins/router'], function 
 							attackLoop(thisWeapon);
 							arrows.quantity(arrows.quantity() - 1);
 						} else {
-							gameMessage("YOU DONT HAVE ANY ARROWS");
+							messageQueue.addMessage("YOU DONT HAVE ANY ARROWS", false);
 						}
 					} else {
 						// It's not a bow, throw it!
@@ -347,24 +354,28 @@ define(['services/session', 'services/datacontext', 'plugins/router'], function 
 				}
 			}
 		} else {
-			gameMessage("YOU DONT HAVE A WEAPON IN HAND");
+			messageQueue.addMessage("YOU DONT HAVE A WEAPON IN HAND", false);
 		}
 	}
 
 	function attackLoop(thisWeapon) {
 		var enemyName = enemy().name();
 		gameMessage(enemyName);
-		setTimeout(function () { gameMessage("HP = " + enemy().hitPoints()); }, 1500);
-		setTimeout(function () { gameMessage("SWING "); }, 1500);
+		messageQueue.addMessage("HP = " + enemy().hitPoints(), false);
+		messageQueue.addMessage("SWING ", false);
 		var hitChance = makeRandom(1,2);
 		hitChance = hitChance == 1 ? true : false;
 		if (hitChance) {
 			// Hit the enemy
-			setTimeout(function () { gameMessage("HIT ENEMY "); }, 1500);
+			messageQueue.addMessage("HIT ENEMY ", false);
 			enemy().hitPoints(enemy().hitPoints() - thisWeapon.damage());
 			if (enemy().hitPoints() < 1) {
 				// Enemy is dead
-				setTimeout(function () { gameMessage("KILLED SKELETON "); }, 1500);
+				messageQueue.addMessage("KILLED " + enemy().name(), false);
+				// Give the player the gold from this monster
+				var goldReward = enemy().value();
+				player().gold(player().gold() + goldReward);
+				messageQueue.addMessage("GOT " + goldReward + " GOLD FROM ENEMY", false);
 				isFighting(false);
 				//Go get another enemy
 				killEnemy();
@@ -372,7 +383,7 @@ define(['services/session', 'services/datacontext', 'plugins/router'], function 
 			}
 		} else {
 			// Missed						
-			setTimeout(function () { gameMessage("MISSED TOTALY"); }, 1500);
+			messageQueue.addMessage("MISSED TOTALY", false);
 		}
 	}
 
@@ -397,8 +408,7 @@ define(['services/session', 'services/datacontext', 'plugins/router'], function 
 					}
 				}	
 			} else {
-				console.log('no more monsters');
-				gameMessage("YOU HAVE CLEARED THE DUNGEON OF MONSTERS");
+				messageQueue.addMessage("YOU HAVE CLEARED THE DUNGEON OF MONSTERS", false);
 			}
 		}		
 	}
@@ -430,12 +440,12 @@ define(['services/session', 'services/datacontext', 'plugins/router'], function 
 
 	function loadDungeon() {
 		isLoading(true);
-		gameMessage("ENTER DUNGEON #");
+		messageQueue.addMessage("ENTER DUNGEON #", true);
 	}
 
 	function wield() {
 		// Ask which weapon to hold
-		gameMessage("WHICH WEAPON WILL YOU HOLD, NUM OF WEAPON");
+		messageQueue.addMessage("WHICH WEAPON WILL YOU HOLD, NUM OF WEAPON", true);
 		isWielding(true);
 	}
 
@@ -463,7 +473,7 @@ define(['services/session', 'services/datacontext', 'plugins/router'], function 
 	function checkForItem(tile) {
 		if (tile.item() && tile.item().name()) {
 			var thisItem = tile.item();
-			gameMessage('FOUND A ' + thisItem.name() + ' ITEM!');
+			messageQueue.addMessage('FOUND A ' + thisItem.name() + ' ITEM!', true);
 			tile.item().id(null);
 			tile.item().name(null);
 			tile.item().value(null);
