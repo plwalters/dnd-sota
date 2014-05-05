@@ -1,7 +1,7 @@
 define([], function () {
 	
 	var currentMessage = ko.observable();
-	var isBlocking = ko.observable();
+	var isBlocking = ko.observable(false);
 	var currentMessageNumber = 0;
 	var messageQueue = ko.observableArray();
 
@@ -13,17 +13,17 @@ define([], function () {
 			currentMessage(null);
 		} else {
 			// Set the current message to the next entry in the queue
-			currentMessage(messageQueue()[0]);
-			currentMessage.Visible(true);
+			currentMessage(messageQueue()[0]());
+			currentMessage().Visible(true);
 		}
 	});
 
-	ko.extenders.removeMessage(target, option) {
+	ko.extenders.removeMessage = function (target, option) {
 		// Remove message after it has been visible for 1.5 seconds
-		target.Visible.subscribe(function (newValue) {
+		target().Visible.subscribe(function (newValue) {
 			if (newValue === true) {
 				// Set a timeout to clear the message from queue
-				setTimeout(function () { target.Visible(false); }, 1500);
+				setTimeout(function () { target().Visible(false); }, 1500);
 			} else {
 				// Remove it from the queue
 				messageQueue.remove(target);

@@ -4,19 +4,14 @@
 	</div>
 	<div class="span8">
 		<div class="row">
-			<!-- ko if: gameMessage -->
-			<h3 data-bind="text: gameMessage().Message"></h3>
-			<!-- /ko -->
-			<!-- ko ifnot: gameMessage -->
-			<h3>ENTER COMMAND</h3>
-			<!-- /ko -->
+			<h3 data-bind="text: gameMessage"></h3>
 		</div>
 		<div class="row">
-			<input data-bind="value: gameInput, returnAction: enterCommand, hasFocus: focusGameInput, valueUpdate: 'afterkeydown'" />
+			<input data-bind="value: gameInput, returnAction: enterCommand, hasFocus: focusGameInput, valueUpdate: 'afterkeydown', disable: isGameOver" />
 		</div>
 	</div>	
 	<div class="span2">
-
+		<button data-bind="click: restartGame, visible: isGameOver">START OVER</button>
 	</div>
 </div>
 <div class="row gameboard" data-bind="with: centeredMap">

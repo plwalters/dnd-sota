@@ -197,6 +197,7 @@
     <Content Include="App\services\datacontext.js" />
     <Content Include="App\services\game.objects.js" />
     <Content Include="App\services\map.creator.js" />
+    <Content Include="App\services\message.queue.js" />
     <Content Include="App\services\session.js" />
     <Content Include="App\viewmodels\gameStart\character.create.js" />
     <Content Include="App\viewmodels\gameStart\designer.js" />

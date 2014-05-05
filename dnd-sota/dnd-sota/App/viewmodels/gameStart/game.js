@@ -1,4 +1,4 @@
-define(['services/session', 'services/datacontext', 'plugins/router', 'services/messager.queue'], function (session, datacontext, router, messageQueue) {
+define(['services/session', 'services/datacontext', 'plugins/router', 'services/message.queue'], function (session, datacontext, router, messageQueue) {
 
 	var player = ko.observable();
 	var map = ko.observable();
@@ -13,6 +13,7 @@ define(['services/session', 'services/datacontext', 'plugins/router', 'services/
 	var mapHeight = ko.observable(10);
 	var mapWidth = ko.observable(10);
 	var enemy = ko.observable();
+	var isGameOver = ko.observable(false);
 	var instructions = [
 		'U,D,L,R - MOVE',
 		'2 - OPEN DOOR',
@@ -27,7 +28,17 @@ define(['services/session', 'services/datacontext', 'plugins/router', 'services/
 		'0 - PASS;'
 	];
 	// Set the game message equal to the current message in the message queue
-	var gameMessage = ko.computed(messageQueue.currentMessage;
+	var gameMessage = ko.computed(function () {
+		var thisMessage = 'ENTER COMMAND';
+		// If there is no map need a map number
+		if (!map()) {
+			thisMessage = 'ENTER DUNGEON # (1 - 4, 4 IS AWESOME)';
+		} else {
+			thisMessage = messageQueue.currentMessage() ? messageQueue.currentMessage().Message() : 'ENTER COMMAND';
+		}
+		return thisMessage;
+	});
+
 	var focusGameInput = ko.observable(false);
 
 	var centeredMap = ko.computed(function () {
@@ -89,7 +100,9 @@ define(['services/session', 'services/datacontext', 'plugins/router', 'services/
 		gameMessage: gameMessage,
 		map: map,
 		player: player,
-		centeredMap: centeredMap
+		centeredMap: centeredMap,
+		isGameOver: isGameOver,
+		restartGame: restartGame
 	};
 	return game;
 
@@ -195,7 +208,14 @@ define(['services/session', 'services/datacontext', 'plugins/router', 'services/
 			else {
 				messageQueue.addMessage('COME ON', false);
 				gameInput(null);
-			}			
+			}
+			if (isFighting()) {
+				// Have the monster attack the player
+				monsterAttackPlayer();
+				// Check if the player died
+				checkIfPlayerIsAlive();
+			}
+			checkIfEnemyClose();
 		}
 	}
 
@@ -220,17 +240,32 @@ define(['services/session', 'services/datacontext', 'plugins/router', 'services/
 
 	function moveUp() {
 		var currentPosition = player().position();
-		movePlayer(currentPosition.x(), currentPosition.y() - 1);
+		movePlayer(currentPosition.x(), currentPosition.y() - 1);		
+		if (isFighting()) {
+			var enemyPosition = enemy().position();
+			// Chase the player
+			moveEnemy(enemyPosition.x(), enemyPosition.y() - 1);
+		}
 	}
 
 	function moveDown() {
 		var currentPosition = player().position();
 		movePlayer(currentPosition.x(), currentPosition.y() + 1);
+		if (isFighting()) {
+			var enemyPosition = enemy().position();
+			// Chase the player
+			moveEnemy(enemyPosition.x(), enemyPosition.y() + 1);
+		}
 	}
 
 	function moveRight() {
 		var currentPosition = player().position();
 		movePlayer(currentPosition.x() + 1, currentPosition.y());
+		if (isFighting()) {
+			var enemyPosition = enemy().position();
+			// Chase the player
+			moveEnemy(enemyPosition.x() + 1, enemyPosition.y());
+		}
 	}
 
 	function openDoor() {
@@ -289,7 +324,7 @@ define(['services/session', 'services/datacontext', 'plugins/router', 'services/
 
 	function useMagic() {
 		// Ask which door to open
-		gameMessage("MAGIC");
+		//gameMessage("MAGIC");
 		if (player().weapon()) {
 			messageQueue.addMessage('YOU CANT USE MAGIC WITH WEAPON IN HAND', false);
 		} else {
@@ -321,48 +356,48 @@ define(['services/session', 'services/datacontext', 'plugins/router', 'services/
 			messageQueue.addMessage("YOUR WEAPON IS " + thisWeapon.name(), false);
 			var enemyTile = findEnemy();
 			var playerTile = findPlayer();
-			var dist = getDistanceBetweenTiles(playerTile, enemyTile);
-			if (dist > thisWeapon.range()) {
-				messageQueue.addMessage("ENEMY IS TOO FAR AWAY", false);
-			} else {
-				isFighting(true);
-				// set isFighting to true which makes monster chase you and attack
-				if (thisWeapon.range() > 1) {
-					// If using bow
-					if (thisWeapon.name() === 'BOW') {
-						// Check for arrows
-						var arrows = ko.utils.arrayFirst(player().items(), function (item) {
-							return item.name() === 'ARROWS';
-						});
-						if (arrows && arrows.quantity() > 0) {
-							// Attack with range
-							attackLoop(thisWeapon);
-							arrows.quantity(arrows.quantity() - 1);
-						} else {
-							messageQueue.addMessage("YOU DONT HAVE ANY ARROWS", false);
-						}
-					} else {
-						// It's not a bow, throw it!
-						attackLoop(thisWeapon);
-						player().weapons.remove(attackLoop);
-						player().weapon(null);
-					}
-					// If weapon has range > 1 throw it and it hits ground
+			if (playerTile && enemyTile) {
+				var dist = getDistanceBetweenTiles(playerTile, enemyTile);
+				if (dist > thisWeapon.range()) {
+					messageQueue.addMessage("ENEMY IS TOO FAR AWAY", false);
 				} else {
-					attackLoop(thisWeapon);
-					// Attack melee
-				}
+					isFighting(true);
+					// set isFighting to true which makes monster chase you and attack
+					if (thisWeapon.range() > 1) {
+						// If using bow
+						if (thisWeapon.name() === 'BOW') {
+							// Check for arrows
+							var arrows = ko.utils.arrayFirst(player().items(), function (item) {
+								return item.name() === 'ARROWS';
+							});
+							if (arrows && arrows.quantity() > 0) {
+								// Attack with range
+								attackLoop(thisWeapon);
+								arrows.quantity(arrows.quantity() - 1);
+							} else {
+								messageQueue.addMessage("YOU DONT HAVE ANY ARROWS", false);
+							}
+						} else {
+							// It's not a bow, throw it!
+							attackLoop(thisWeapon);
+							player().weapons.remove(attackLoop);
+							player().weapon(null);
+						}
+						// If weapon has range > 1 throw it and it hits ground
+					} else {
+						attackLoop(thisWeapon);
+						// Attack melee
+					}
+				}				
 			}
 		} else {
-			messageQueue.addMessage("YOU DONT HAVE A WEAPON IN HAND", false);
+			messageQueue.addMessage("DO YOU REALIZE YOU ARE BARE HANDED", false);
 		}
 	}
 
 	function attackLoop(thisWeapon) {
 		var enemyName = enemy().name();
-		gameMessage(enemyName);
-		messageQueue.addMessage("HP = " + enemy().hitPoints(), false);
-		messageQueue.addMessage("SWING ", false);
+		messageQueue.addMessage(enemyName + ", HP = " + enemy().hitPoints() + ". SWING", false);
 		var hitChance = makeRandom(1,2);
 		hitChance = hitChance == 1 ? true : false;
 		if (hitChance) {
@@ -393,7 +428,8 @@ define(['services/session', 'services/datacontext', 'plugins/router', 'services/
 
 	function createEnemy() {
 		if (map()) {
-			enemy(datacontext.createComplexType('TileEnemy', { name: 'GOBLIN', hitPoints: 10, damage: 1 }));
+			// Should create an enemy based off whatever type is not on the map, not Goblin by default
+			enemy(datacontext.createComplexType('TileEnemy', { name: 'GOBLIN', hitPoints: 10, damage: 1, value: 500 }));
 			var enemyPosition = datacontext.findEnemy(map().id());
 			// If enemyPosition is empty there are no more monsters
 			if (enemyPosition) {				
@@ -452,6 +488,12 @@ define(['services/session', 'services/datacontext', 'plugins/router', 'services/
 	function moveLeft() {
 		var currentPosition = player().position();
 		movePlayer(currentPosition.x() - 1, currentPosition.y());
+		// If the player is fighting a monster
+		if (isFighting()) {
+			var enemyPosition = enemy().position();
+			// Chase the player
+			moveEnemy(enemyPosition.x() - 1, enemyPosition.y());
+		}
 	}
 
 	function movePlayer(newX, newY) {
@@ -470,10 +512,32 @@ define(['services/session', 'services/datacontext', 'plugins/router', 'services/
 		}
 	}
 
+	function moveEnemy(newX, newY) {
+		if (enemy()) {
+			var currentPosition = enemy().position();
+			var oldTile = datacontext.getTileByCoord(null, currentPosition.x(), currentPosition.y(), map().id());
+			var newTile = datacontext.getTileByCoord(null, newX, newY, map().id());
+			// Check for obstruction
+			if (newTile) {
+				if (!checkIfOccupied(newTile)) {
+					//enemyOccupyTile(newTile);
+					// Move the tile enemy entity to the new tile
+					var oldTileEnemy = oldTile.enemy();
+					newTile.enemy(oldTileEnemy);
+					clearTile(oldTile, true);
+					enemyOccupyTile(newTile);
+				}
+			}
+		}
+	}
+
 	function checkForItem(tile) {
 		if (tile.item() && tile.item().name()) {
 			var thisItem = tile.item();
-			messageQueue.addMessage('FOUND A ' + thisItem.name() + ' ITEM!', true);
+			messageQueue.addMessage('AH.......' + thisItem.name() + '.........', true);
+			if (thisItem.name() === 'GOLD') {
+				messageQueue.addMessage(thisItem.value() + ' PIECES', true);				
+			}
 			tile.item().id(null);
 			tile.item().name(null);
 			tile.item().value(null);
@@ -481,7 +545,7 @@ define(['services/session', 'services/datacontext', 'plugins/router', 'services/
 				player().gold(player().gold() + thisItem.value());
 			}
 		} else {
-			gameMessage('ENTER COMMAND');
+			// gameMessage('ENTER COMMAND');
 		}
 	}
 
@@ -489,15 +553,16 @@ define(['services/session', 'services/datacontext', 'plugins/router', 'services/
 		return tile.occupied();
 	}
 
-	function clearTile (tile) {
+	function clearTile (tile, isEnemy) {
 		tile.occupied(false);
 		tile.image(" ");
 		if (tile.item()) {
 			tile.item().id(null);
 			tile.item().name(null);
 			tile.item().value(null);			
-		}		
-		if (tile.enemy() && tile.enemy().id()) {
+		}
+		// If there is an enemy there and it is not the enemy clearing it,
+		if (tile.enemy() && tile.enemy().id() && !isEnemy) {
 			tile.enemy().id(null);
 			tile.enemy().name(null);
 			tile.enemy().hitPoints(null);
@@ -518,5 +583,65 @@ define(['services/session', 'services/datacontext', 'plugins/router', 'services/
 		tile.image("U");
 		player().position().x(tile.x());
 		player().position().y(tile.y());
+	}
+
+	function enemyOccupyTile (tile) {
+		tile.occupied(true);
+		tile.image("E");
+		enemy().position().x(tile.x());
+		enemy().position().y(tile.y());
+	}
+
+	function checkIfEnemyClose() {		
+		var enemyTile = findEnemy();
+		var playerTile = findPlayer();
+		if (playerTile && enemyTile) {			
+			var dist = getDistanceBetweenTiles(playerTile, enemyTile);
+			if (dist == 1) {
+				messageQueue.addMessage(enemy().name() + ' WATCH IT', false);
+				isFighting(true);
+				// Do fight logic but with monster attack first
+			}
+		}
+	}
+
+	function monsterAttackPlayer() {
+		// Have the monster attack the player		
+		var enemyName = enemy().name();
+		var hitChance = makeRandom(1,2);
+		hitChance = hitChance == 1 ? true : false;
+		if (hitChance) {
+			// Hit the enemy
+			messageQueue.addMessage(enemyName + ' SCORES A HIT', false);
+			player().hitPoints(player().hitPoints() - enemy().damage());
+		} else {
+			// Missed
+			messageQueue.addMessage("HE HIT YOU BUT NOT GOOD ENOUGH", false);
+		}
+	}
+
+	function checkIfPlayerIsAlive() {
+		// Check if the player is still alive
+		if (player().hitPoints() <= 0) {
+			// Player has died
+			messageQueue.addMessage("SORRY YOUR DEAD", false);
+			var playerPosition = player().position();
+			var oldTile = datacontext.getTileByCoord(null, playerPosition.x(), playerPosition.y(), map().id());
+			clearTile(oldTile);
+			gameOver();
+			return false;
+		} else if (player().hitPoints() <= 2) {
+			messageQueue.addMessage("WATCH IT HP = " + player().hitPoints(), false);			
+		}
+		return true;
+	}
+
+	function gameOver() {
+		isGameOver(true);
+	}
+
+	function restartGame() {
+		// Restart the game
+		alert('TODO - RESTART GAME : )');
 	}
 });
