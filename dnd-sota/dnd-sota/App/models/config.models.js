@@ -242,6 +242,7 @@
 	                hitPoints: { dataType: "Int64" },
 	                classTypeId: { dataType: "Int64" },
 	                weaponId: { dataType: "Int64" },
+	                itemId: { dataType: "Int64" },
 	                spellId: { dataType: "Int64" },
 		            position: { complexTypeName: "Position:#DndSota", isScalar: true }
 	            },
@@ -265,7 +266,11 @@
 					spells: {
 						entityTypeName: "Spell", isScalar: false,
 						associationName: "Character_Spells"
-					},					
+					},
+					item: {
+						entityTypeName: "Item", isScalar: true,
+						associationName: "Character_Item", foreignKeyNames: ["itemId"]
+					},
 					items: {
 						entityTypeName: "Item", isScalar: false,
 						associationName: "Character_Items"

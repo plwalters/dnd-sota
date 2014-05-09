@@ -198,6 +198,7 @@ define(['services/session', 'services/datacontext', 'plugins/router', 'services/
 				}
 				createPlayerOnMap();
 				createEnemy();
+				checkForArmor();
 				gameInput(null);
 				isLoading(false);
 			}
@@ -289,6 +290,19 @@ define(['services/session', 'services/datacontext', 'plugins/router', 'services/
 
 	function pass() {
 		return true;
+	}
+
+	function checkForArmor() {
+		// If there is a player and he has items,
+		if (player() && player().items()) {
+			// Look for armor in his items
+			var thisArmor = ko.utils.arrayFirst(player().items(), function (item) {
+				return item.name().indexOf('MAIL') !== -1;
+			});
+			if (thisArmor) {
+				player().item(thisArmor);
+			}
+		}
 	}
 
 	function createPlayerOnMap() {
@@ -477,7 +491,11 @@ define(['services/session', 'services/datacontext', 'plugins/router', 'services/
 		var thisWeapon = player().weapon();
 		// Ask what to fight
 		if (thisWeapon) {
-			messageQueue.addMessage("YOUR WEAPON IS " + thisWeapon.name(), false);
+			if (thisWeapon.name() === 'FISTS') {				
+				messageQueue.addMessage("DO YOU REALIZE YOU ARE BARE HANDED!", false);
+			} else {
+				messageQueue.addMessage("YOUR WEAPON IS " + thisWeapon.name(), false);	
+			}
 			var enemyTile = findEnemy();
 			var playerTile = findPlayer();
 			if (playerTile && enemyTile) {
@@ -515,7 +533,7 @@ define(['services/session', 'services/datacontext', 'plugins/router', 'services/
 				}				
 			}
 		} else {
-			messageQueue.addMessage("DO YOU REALIZE YOU ARE BARE HANDED", false);
+			console.log('Problem');
 		}
 	}
 

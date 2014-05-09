@@ -5,7 +5,13 @@ define(['services/session', 'services/game.objects', 'plugins/router', 'services
 	var fastOrNorm = ko.observable();
 	var weaponName = ko.observable();
 	var itemName = ko.observable();
-	var weaponTypes = gameObjects.weapons();
+	var weaponTypes = ko.computed(function () {
+		var theseWeapons = gameObjects.weapons();
+		theseWeapons = ko.utils.arrayFilter(theseWeapons, function (wep) {
+			return wep.name() !== 'FISTS';
+		});
+		return theseWeapons;
+	});
 	var items = ko.computed(function () {
 		var theseItems = [];
 		theseItems = ko.utils.arrayFilter(gameObjects.items(), function (item) {
@@ -90,7 +96,14 @@ define(['services/session', 'services/game.objects', 'plugins/router', 'services
 		if (weaponName()) {
 			var thisWeaponName = weaponName().toLowerCase();
 			// Check if it is going to buy items instead now
-			if (thisWeaponName === '-1' || thisWeaponName === 'done') {				
+			if (thisWeaponName === '-1' || thisWeaponName === 'done') {
+				// Add fists as a weapon
+				var fists = ko.utils.arrayFirst(gameObjects.weapons(), function (wep) {
+					return wep.name() === 'FISTS';
+				});
+				player().weapons.push(fists);
+				player().weapon(fists);
+				// Advance to purchase items
 				state(3);
 			}
 			// Try to get the weapon by name first

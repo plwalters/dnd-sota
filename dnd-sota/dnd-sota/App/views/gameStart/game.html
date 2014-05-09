@@ -53,6 +53,14 @@
 				<span>WIELDING: </span><span>NOTHING</span>
 				<!-- /ko -->
 			</li>
+			<li>
+				<!-- ko if: item() -->
+				<span>ARMOR: </span><span data-bind="text: item().name"></span>
+				<!-- /ko -->
+				<!-- ko ifnot: item() -->
+				<span>ARMOR: </span><span>NOTHING</span>
+				<!-- /ko -->
+			</li>
 		</ul>
 		<h3>WEAPONS</h3>
 		<ul data-bind="foreach: weapons">
