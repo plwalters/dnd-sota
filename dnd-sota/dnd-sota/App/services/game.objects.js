@@ -27,17 +27,17 @@
 		datacontext.createEntity('Armor', { name: 'TLTE MAIL', defense: 1, value: 50 } )
 	]);
 
-	// var spells = ko.observableArray([
-	// 	datacontext.createEntity('Spell', { name: 'KILL', damage: 1, value: 15, range: 1 } ),
-	// 	datacontext.createEntity('Spell', { name: 'MAGIC MISSLE', damage: 1, value: 15, range: 1 } ),
-	// 	datacontext.createEntity('Spell', { name: 'CURE LIGHT', damage: 0, value: 15, range: 1 } ),
-	// 	datacontext.createEntity('Spell', { name: 'FIND TRAPS', damage: 0, value: 15, range: 1 } ),
-	// 	datacontext.createEntity('Spell', { name: 'MAGIC MISSLE', damage: 1, value: 15, range: 1 } ),
-	// 	datacontext.createEntity('Spell', { name: 'MAGIC MISSLE', damage: 1, value: 15, range: 1 } ),
-	// 	datacontext.createEntity('Spell', { name: 'CURE LIGHT', damage: 0, value: 15, range: 1 } ),
-	// 	datacontext.createEntity('Spell', { name: 'FIND SECRET DOORS', damage: 0, value: 15, range: 1 } ),
-	// 	datacontext.createEntity('Spell', { name: 'PUSH', damage: 1, value: 15, range: 1 } )
-	// ]);
+	var spells = ko.observableArray([
+		datacontext.createEntity('Spell', { id: 1, name: 'KILL', damage: 100, range: 1, value: 500 } ),
+		datacontext.createEntity('Spell', { id: 2, name: 'MAGIC MISSLE', damage: 1, range: 1, value: 200 } ),
+		datacontext.createEntity('Spell', { id: 3, name: 'CURE LIGHT', damage: 3, range: 1, value: 200 } ),
+		datacontext.createEntity('Spell', { id: 4, name: 'FIND TRAPS', damage: 0, range: 1, value: 200 } ),
+		datacontext.createEntity('Spell', { id: 5, name: 'MAGIC MISSLE', damage: 2, range: 1, value: 100 } ),
+		datacontext.createEntity('Spell', { id: 6, name: 'MAGIC MISSLE', damage: 6, range: 1, value: 300 } ),
+		datacontext.createEntity('Spell', { id: 7, name: 'CURE LIGHT', damage: 3, range: 1, value: 1000 } ),
+		datacontext.createEntity('Spell', { id: 8, name: 'FIND SECRET DOORS', damage: 0, range: 1, value: 200 } ),
+		datacontext.createEntity('Spell', { id: 9, name: 'PUSH', damage: 1, range: 1, value: 75 } )
+	]);
 
 	var tileTypes = ko.observableArray([
 		datacontext.createEntity('TileType', { name: 'WALL', designerImage: '*', image: '*' } ),
@@ -117,7 +117,7 @@
 		items: items,
 		maps: maps,
 		tileTypes: tileTypes,
-		// spells: spells,
+		spells: spells,
 		enemyTypes: enemyTypes,
 		mapCreator: mapCreator
 	};

@@ -1,4 +1,4 @@
-define(['services/session', 'services/datacontext', 'plugins/router', 'services/message.queue'], function (session, datacontext, router, messageQueue) {
+define(['services/session', 'services/datacontext', 'plugins/router', 'services/message.queue', 'services/game.objects'], function (session, datacontext, router, messageQueue, gameObjects) {
 
 	var player = ko.observable();
 	var map = ko.observable();
@@ -10,6 +10,7 @@ define(['services/session', 'services/datacontext', 'plugins/router', 'services/
 	var isWielding = ko.observable();
 	var isLoading = ko.observable();
 	var isFighting = ko.observable();
+	var isCasting = ko.observable();
 	var mapHeight = ko.observable(10);
 	var mapWidth = ko.observable(10);
 	var enemy = ko.observable();
@@ -17,7 +18,7 @@ define(['services/session', 'services/datacontext', 'plugins/router', 'services/
 	var instructions = [
 		'U,D,L,R - MOVE',
 		'2 - OPEN DOOR',
-		'3 - SEARCH (TRAPS, DOORS)',
+		'3 - SEARCH',
 		'4 - SWITCH WEAPON',
 		'5 - FIGHT',
 		'7 - SAVE GAME',
@@ -27,6 +28,14 @@ define(['services/session', 'services/datacontext', 'plugins/router', 'services/
 		'11 - BUY HP',
 		'0 - PASS;'
 	];
+	var availableSpells = ko.computed(function () {
+		var spellsList = gameObjects.spells();
+		// Get a list of spells the player doesn't have
+		var availablespellslist = ko.utils.arrayFilter(spellsList, function (spell) {
+			return !spell.playerId();
+		});
+		return availablespellslist;
+	});
 	// Set the game message equal to the current message in the message queue
 	var gameMessage = ko.computed(function () {
 		var thisMessage = 'ENTER COMMAND';
@@ -102,7 +111,8 @@ define(['services/session', 'services/datacontext', 'plugins/router', 'services/
 		player: player,
 		centeredMap: centeredMap,
 		isGameOver: isGameOver,
-		restartGame: restartGame
+		restartGame: restartGame,
+		availableSpells: availableSpells
 	};
 	return game;
 
@@ -121,6 +131,40 @@ define(['services/session', 'services/datacontext', 'plugins/router', 'services/
 					}
 					gameInput(null);
 					isWielding(false);
+				}
+			} else if (isCasting()) {
+				var thisInt = parseInt(thisInput);
+				if (!isNaN(thisInt)) {
+					var thisSpell = player().spells()[thisInt - 1];
+					if (thisSpell) {
+						player().spell(thisSpell);
+						messageQueue.addMessage('YOU ARE CASTING ' + thisSpell.name(), false);
+					} else {
+						messageQueue.addMessage('SORRY YOU DONT HAVE THAT SPELL', false);
+					}
+					gameInput(null);
+					castSpell();
+					isCasting(false);
+				}
+			} else if (isBuyingMagic()) {
+				var thisInt = parseInt(thisInput);
+				if (!isNaN(thisInt)) {
+					var thisSpell = ko.utils.arrayFirst(gameObjects.spells(), function (spell) {
+						return spell.id() === thisInt;
+					});
+					if (thisSpell) {
+						if (player().gold() > thisSpell.value()) {
+							player().gold(player().gold() - thisSpell.value());
+							player().spells.push(thisSpell);
+							messageQueue.addMessage('YOU PURCHASED ' + thisSpell.name(), false);
+						} else {
+							messageQueue.addMessage('YOU CANT AFFORD ' + thisSpell.name(), false);
+						}
+					} else {
+						messageQueue.addMessage('SORRY SPELL DOESNT EXIST', false);
+					}
+					gameInput(null);
+					isBuyingMagic(false);
 				}
 			}
 			else if (!map() || isLoading()) {
@@ -217,6 +261,10 @@ define(['services/session', 'services/datacontext', 'plugins/router', 'services/
 			}
 			checkIfEnemyClose();
 		}
+	}
+
+	function pass() {
+		return true;
 	}
 
 	function createPlayerOnMap() {
@@ -327,9 +375,61 @@ define(['services/session', 'services/datacontext', 'plugins/router', 'services/
 		//gameMessage("MAGIC");
 		if (player().weapon()) {
 			messageQueue.addMessage('YOU CANT USE MAGIC WITH WEAPON IN HAND', false);
+		} else if (player().classType().name().toLowerCase() === 'fighter') {
+			messageQueue.addMessage('YOU CANT USE MAGIC YOUR NOT A MAGIC USER', false);
 		} else {
-			messageQueue.addMessage('YOU CANT USE MAGIC WITH WEAPON IN HAND', false);
+			messageQueue.addMessage('WHICH SPELL?', false);
+			isCasting(true);
 		}
+	}
+
+	function castSpell() {
+		var className = player().classType().name().toLowerCase().toLowerCase();
+		if (className === 'cleric' || className ===  'wizard') {
+			var thisSpell = player().spell();
+			if (thisSpell.id() == 1) {
+				// Cast kill
+				attackLoop(thisSpell, 'CASTING');
+			} else if (thisSpell.id()  == 2) {
+				// Cast magic missle 2
+				attackLoop(thisSpell, 'CASTING');
+			} else if (thisSpell.id()  == 3) {
+				// CAST cure light
+				healLoop(thisSpell.damage());
+			} else if (thisSpell.id()  == 4) {
+				// CAST find traps
+				messageQueue.addMessage('NO TRAPS FOUND!', false);
+			} else if (thisSpell.id()  == 5) {
+				// CAST magic missle 1
+				attackLoop(thisSpell, 'CASTING');
+			} else if (thisSpell.id()  == 6) {
+				// CAST magic missle 3				
+				attackLoop(thisSpell, 'CASTING');
+			} else if (thisSpell.id()  == 7) {
+				// CAST cure light
+				healLoop(thisSpell.damage());
+			} else if (thisSpell.id()  == 8) {
+				// CAST find secret doors
+				messageQueue.addMessage('NO SECRET DOORS FOUND!', false);
+			} else if (thisSpell.id()  == 9) {
+				// CAST push
+				messageQueue.addMessage('WTF PUSH LOL...', false);
+			}
+			// If there is a spell remove it from the player
+			if (thisSpell) {
+				// Set spell to null
+				player().spell(null);
+				// Remove the spell since it is used already
+				player().spells.remove(thisSpell);
+			}
+			// Player is no longer casting
+			isCasting(false);
+		}
+	}
+
+	function healLoop (amountToHeal) {
+		player().hitPoints(player().hitPoints() + amountToHeal);
+		messageQueue.addMessage('HEALED.  NEW HP = ' + player().hitPoints(), false);
 	}
 
 	function buyMagic() {
@@ -338,7 +438,7 @@ define(['services/session', 'services/datacontext', 'plugins/router', 'services/
 			messageQueue.addMessage('YOU CANT BUY ANY', false);
 		} else {
 			// else ask it what to buy or something
-			messageQueue.addMessage('BUY WHICH', false);
+			messageQueue.addMessage('BUY WHICH?', false);
 			isBuyingMagic(true);
 		}
 	}
@@ -372,20 +472,20 @@ define(['services/session', 'services/datacontext', 'plugins/router', 'services/
 							});
 							if (arrows && arrows.quantity() > 0) {
 								// Attack with range
-								attackLoop(thisWeapon);
+								attackLoop(thisWeapon, 'FIRED');
 								arrows.quantity(arrows.quantity() - 1);
 							} else {
 								messageQueue.addMessage("YOU DONT HAVE ANY ARROWS", false);
 							}
 						} else {
 							// It's not a bow, throw it!
-							attackLoop(thisWeapon);
-							player().weapons.remove(attackLoop);
+							attackLoop(thisWeapon, 'SWING');
+							player().weapons.remove(thisWeapon);
 							player().weapon(null);
 						}
 						// If weapon has range > 1 throw it and it hits ground
 					} else {
-						attackLoop(thisWeapon);
+						attackLoop(thisWeapon, 'SWING');
 						// Attack melee
 					}
 				}				
@@ -395,9 +495,9 @@ define(['services/session', 'services/datacontext', 'plugins/router', 'services/
 		}
 	}
 
-	function attackLoop(thisWeapon) {
+	function attackLoop(thisWeapon, action) {
 		var enemyName = enemy().name();
-		messageQueue.addMessage(enemyName + ", HP = " + enemy().hitPoints() + ". SWING", false);
+		messageQueue.addMessage(enemyName + ", HP = " + enemy().hitPoints() + ". " + action, false);
 		var hitChance = makeRandom(1,2);
 		hitChance = hitChance == 1 ? true : false;
 		if (hitChance) {
