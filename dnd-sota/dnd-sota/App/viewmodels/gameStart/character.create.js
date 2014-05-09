@@ -63,7 +63,7 @@ define(['services/session', 'services/game.objects', 'plugins/router', 'services
 				character().wisdom(makeRandom(15, 15));
 				character().intellect(makeRandom(15, 15));
 				character().gold(makeRandom(15,15)*15);
-				character().hitPoints(makeRandom(8, 8));
+				character().hitPoints(makeRandom(16, 16));
 				return true;
 			} else {
 				datacontext.saveEntity(character());
@@ -77,7 +77,8 @@ define(['services/session', 'services/game.objects', 'plugins/router', 'services
 				character().wisdom(makeRandom(1, 15));
 				character().intellect(makeRandom(1, 15));
 				character().gold(makeRandom(10,15)*15);
-				character().hitPoints(makeRandom(2, 8));
+				// At least give em a chance for now
+				character().hitPoints(makeRandom(2, 8) + 10);
 			}
 		}
 	}

@@ -122,17 +122,23 @@ define(['services/session', 'services/datacontext', 'plugins/router', 'services/
 			if (isWielding()) {
 				var thisInt = parseInt(thisInput);
 				if (!isNaN(thisInt)) {
-					var thisWeapon = player().weapons()[thisInt - 1];
-					if (thisWeapon) {
-						player().weapon(thisWeapon);
-						messageQueue.addMessage('YOU HAVE EQUIPPED A ' + thisWeapon.name(), false);
+					// If it is zero, remove the weapon
+					if (thisInt === 0) {
+						player().weapon(null);
 					} else {
-						messageQueue.addMessage('SORRY YOU DONT HAVE THAT WEAPON', false);
+						var thisWeapon = player().weapons()[thisInt - 1];
+						if (thisWeapon) {
+							player().weapon(thisWeapon);
+							messageQueue.addMessage('YOU HAVE EQUIPPED A ' + thisWeapon.name(), false);
+						} else {
+							messageQueue.addMessage('SORRY YOU DONT HAVE THAT WEAPON', false);
+						}
 					}
 					gameInput(null);
 					isWielding(false);
 				}
-			} else if (isCasting()) {
+			} 
+			else if (isCasting()) {
 				var thisInt = parseInt(thisInput);
 				if (!isNaN(thisInt)) {
 					var thisSpell = player().spells()[thisInt - 1];
@@ -144,9 +150,10 @@ define(['services/session', 'services/datacontext', 'plugins/router', 'services/
 					}
 					gameInput(null);
 					castSpell();
-					isCasting(false);
 				}
-			} else if (isBuyingMagic()) {
+				isCasting(false);
+			} 
+			else if (isBuyingMagic()) {
 				var thisInt = parseInt(thisInput);
 				if (!isNaN(thisInt)) {
 					var thisSpell = ko.utils.arrayFirst(gameObjects.spells(), function (spell) {
@@ -164,8 +171,25 @@ define(['services/session', 'services/datacontext', 'plugins/router', 'services/
 						messageQueue.addMessage('SORRY SPELL DOESNT EXIST', false);
 					}
 					gameInput(null);
-					isBuyingMagic(false);
 				}
+				isBuyingMagic(false);
+			} 
+			else if (isBuyingHP()) {
+				var thisInt = parseInt(thisInput);
+				if (!isNaN(thisInt) && thisInt > 0) {
+					var thisCost = thisInt * 200;
+					// If the player has enough gold,
+					if (player().gold() > thisCost) {
+						// Reduce the players gold and add HP
+						player().gold(player().gold() - thisCost);
+						player().hitPoints(player().hitPoints() + thisInt);
+						messageQueue.addMessage('PURCHASED ' + thisInt + ' HP', false);
+					} else {
+						messageQueue.addMessage('YOU CANT AFFORD THAT ', false);
+					}
+				}
+				gameInput(null);
+				isBuyingHP(false);
 			}
 			else if (!map() || isLoading()) {
 				datacontext.getMap(map, thisInput);
@@ -528,21 +552,33 @@ define(['services/session', 'services/datacontext', 'plugins/router', 'services/
 
 	function createEnemy() {
 		if (map()) {
-			// Should create an enemy based off whatever type is not on the map, not Goblin by default
-			enemy(datacontext.createComplexType('TileEnemy', { name: 'GOBLIN', hitPoints: 10, damage: 1, value: 500 }));
+			// Find the next enemy spot
 			var enemyPosition = datacontext.findEnemy(map().id());
-			// If enemyPosition is empty there are no more monsters
-			if (enemyPosition) {				
-				datacontext.createEnemyPosition(enemy(), enemyPosition.x(), enemyPosition.y());
-				if (enemy()) {
-					var currentPosition = enemy().position();
-					var thisTile = datacontext.getTileByCoord(null, currentPosition.x(), currentPosition.y(), map().id());
-					if (thisTile) {
-						thisTile.image('E');
-						thisTile.occupied(true);
-	        			thisTile.enemy(enemy());
+			// If a tile is returned,
+			if (enemyPosition) {
+				// Get the enemy type
+				var thisTilesEnemyType = enemyPosition.enemySpawnType();
+				// Clear that tiles enemy type so it won't spawn again
+				enemyPosition.enemySpawnType(null);
+				enemyPosition.entityAspect.acceptChanges();
+				// Create the enemy
+				var thisEnemyType = ko.utils.arrayFirst(gameObjects.enemyTypes(), function (enemyType) {
+					return enemyType.image() === thisTilesEnemyType;
+				});
+				if (thisEnemyType) {
+					enemy(datacontext.createComplexType('TileEnemy', { name: thisEnemyType.name(), hitPoints: thisEnemyType.hitPoints(), damage: thisEnemyType.damage(), value: thisEnemyType.value(), image: thisEnemyType.image() }));
+					// If enemyPosition is empty there are no more monsters
+					datacontext.createEnemyPosition(enemy(), enemyPosition.x(), enemyPosition.y());
+					if (enemy()) {
+						var currentPosition = enemy().position();
+						var thisTile = datacontext.getTileByCoord(null, currentPosition.x(), currentPosition.y(), map().id());
+						if (thisTile) {
+							thisTile.image(enemy().image());
+							thisTile.occupied(true);
+		        			thisTile.enemy(enemy());
+						}
 					}
-				}	
+				}
 			} else {
 				messageQueue.addMessage("YOU HAVE CLEARED THE DUNGEON OF MONSTERS", false);
 			}
@@ -687,7 +723,7 @@ define(['services/session', 'services/datacontext', 'plugins/router', 'services/
 
 	function enemyOccupyTile (tile) {
 		tile.occupied(true);
-		tile.image("E");
+		tile.image(enemy().image());
 		enemy().position().x(tile.x());
 		enemy().position().y(tile.y());
 	}

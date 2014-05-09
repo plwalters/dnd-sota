@@ -71,7 +71,7 @@
 		<h3>ITEMS</h3>
 		<ul data-bind="foreach: items">
 			<li>
-				<strong><span data-bind="text: $index"></span>-<span data-bind="text: name"></span>- VALUE: <span data-bind="text: value"></span></strong>
+				<strong><span data-bind="text: $index() + 1"></span>-<span data-bind="text: name"></span>- VALUE: <span data-bind="text: value"></span></strong>
 			</li>
 		</ul>
 	</div>
@@ -97,7 +97,7 @@
 			<h3>AVAILABLE SPELLS</h3>
 			<ul data-bind="foreach: $parent.availableSpells">
 				<li>
-					<strong><span data-bind="text: $index"></span>-<span data-bind="text: name"></span>- COST: <span data-bind="text: value"></span></strong>
+					<strong><span data-bind="text: $index() + 1"></span>-<span data-bind="text: name"></span>- COST: <span data-bind="text: value"></span></strong>
 				</li>
 			</ul>
 		</div>

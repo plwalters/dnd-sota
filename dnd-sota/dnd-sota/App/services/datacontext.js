@@ -109,7 +109,7 @@
     }
 
     function findEnemy(mapId) {
-        var imagePred = new Predicate('image', '==', '@');
+        var imagePred = new Predicate('enemySpawnType', '!=', null);
         var mapPred = new Predicate('mapId', '==', mapId);
 
         // Make a total predicate to find the tile
@@ -117,11 +117,14 @@
 
         // Get the tile by coordinates and map
         var query = EntityQuery.from('Tiles')
+            .orderBy('enemySpawnOrder')
             .toType('Tile')
             .where(totalPred);
 
         var result = manager.executeQueryLocally(query);
-        return result[0];
+        // Get the first enemy
+        var thisEnemyTile = result[0];
+        return thisEnemyTile;
     }
 
     function createPlayerPosition(player, xvar, yvar) {
