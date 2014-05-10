@@ -18,7 +18,7 @@
 	<div class="span1">
 
 	</div>
-	<div class="span2" data-bind="with: $parent.player">
+	<div class="span2" data-bind="with: $parent.player, visible: $parent.session.settings().ShowAttributes">
 		<h3>ATTRIBUTES</h3>
 		<ul>
 			<li>
@@ -83,7 +83,7 @@
 			</li>
 		</ul>
 	</div>
-	<div class="span7">
+	<div class="span7" data-bind="visible: $parent.session.settings().ShowMap">
 		<ul class="unstyled " data-bind="foreach: rows">
 			<li>
 				<ul class="unstyled game-row" data-bind="foreach: $data">
@@ -94,7 +94,7 @@
 			</li>
 		</ul>
 	</div>
-	<div class="span2">
+	<div class="span2" data-bind="visible: $parent.session.settings().ShowInstructions">
 		<h3>INSTRUCTIONS</h3>
 		<ul data-bind="foreach: $parent.instructions">
 			<li>
@@ -109,5 +109,13 @@
 				</li>
 			</ul>
 		</div>
+	</div>
+	<div class="span2" data-bind="visible: !$parent.session.settings().ShowInstructions()">
+		<h3>INSTRUCTIONS</h3>
+		<ul>
+			<li>
+				<span>20 - SETTINGS</span>
+			</li>
+		</ul>
 	</div>
 </div>

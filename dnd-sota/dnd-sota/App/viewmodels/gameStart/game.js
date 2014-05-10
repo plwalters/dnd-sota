@@ -14,6 +14,7 @@ define(['services/session', 'services/datacontext', 'plugins/router', 'services/
 	var mapHeight = ko.observable(10);
 	var mapWidth = ko.observable(10);
 	var enemy = ko.observable();
+	var needToHideMap = ko.observable(false);
 	var isGameOver = ko.observable(false);
 	var instructions = [
 		'U,D,L,R - MOVE',
@@ -112,13 +113,19 @@ define(['services/session', 'services/datacontext', 'plugins/router', 'services/
 		centeredMap: centeredMap,
 		isGameOver: isGameOver,
 		restartGame: restartGame,
-		availableSpells: availableSpells
+		availableSpells: availableSpells,
+		session: session
 	};
 	return game;
 
 	function enterCommand() {
 		if (gameInput()) {
 			var thisInput = gameInput().toLowerCase();
+			// If they hit 6 to show and it is on settings old,
+			if (needToHideMap()) {
+				session.settings().ShowMap(false);
+				needToHideMap(false);
+			}
 			if (isWielding()) {
 				var thisInt = parseInt(thisInput);
 				if (!isNaN(thisInt)) {
@@ -152,7 +159,7 @@ define(['services/session', 'services/datacontext', 'plugins/router', 'services/
 					castSpell();
 				}
 				isCasting(false);
-			} 
+			}
 			else if (isBuyingMagic()) {
 				var thisInt = parseInt(thisInput);
 				if (!isNaN(thisInt)) {
@@ -250,6 +257,11 @@ define(['services/session', 'services/datacontext', 'plugins/router', 'services/
 				gameInput(null);
 				fight();
 			}
+			else if (thisInput === '6' && session.settings().Old()) {
+				gameInput(null);
+				session.settings().ShowMap(true);
+				needToHideMap(true);
+			}
 			else if (thisInput === '7' || thisInput === 'save') {
 				gameInput(null);
 				save();
@@ -274,6 +286,14 @@ define(['services/session', 'services/datacontext', 'plugins/router', 'services/
 				gameInput(null);
 				pass();
 			}
+			else if (thisInput === '20') {
+				if (session.settings().ShowMap()) {
+					session.setSettingsOld();
+				} else {					
+					session.setSettingsNew();
+				}
+				gameInput(null);
+			}
 			else {
 				messageQueue.addMessage('COME ON', false);
 				gameInput(null);
@@ -284,6 +304,7 @@ define(['services/session', 'services/datacontext', 'plugins/router', 'services/
 				// Check if the player died
 				checkIfPlayerIsAlive();
 			}
+			gameInput(null);
 			checkIfEnemyClose();
 		}
 	}

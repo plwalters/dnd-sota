@@ -2,6 +2,20 @@
 	<div class="span2">
 
 	</div>
+	<div class="span8">
+		<div>
+			<h5>OLD OR NEW</h5>
+			<input data-bind="value: oldOrNew, returnAction: checkOldOrNew, hasFocus: focusOldOrNew, valueUpdate: 'afterkeydown'" />
+		</div>
+	</div>	
+	<div class="span2">
+
+	</div>
+</div>
+<div class="row" data-bind="visible: state() === 2">
+	<div class="span2">
+
+	</div>
 	<div class="span8">		
 		<div data-bind="with: character">
 			<h5>CHARACTER NAME</h5>
@@ -12,9 +26,38 @@
 
 	</div>
 </div>
-<div class="row" data-bind="visible: state() === 2">
-	<div class="span2">
+<div class="row" data-bind="visible: state() === 3">
+	<div class="span1">
 
+	</div>
+	<div class="span2" data-bind="with: character">
+		<h3>ATTRIBUTES</h3>
+		<ul>
+			<li>
+				<span>NAME: </span><span data-bind="text: name"></span>
+			</li>
+			<li>
+				<span>HIT POINTS: </span><span data-bind="text: hitPoints"></span>
+			</li>
+			<li>
+				<span>GOLD: </span><span data-bind="text: gold"></span>
+			</li>
+			<li>
+				<span>STRENGTH: </span><span data-bind="text: strength"></span>
+			</li>
+			<li>
+				<span>DEXTERITY: </span><span data-bind="text: dexterity"></span>
+			</li>
+			<li>
+				<span>CONSTITUTION: </span><span data-bind="text: constitution"></span>
+			</li>
+			<li>
+				<span>WISDOM: </span><span data-bind="text: wisdom"></span>
+			</li>
+			<li>
+				<span>INTELLECT: </span><span data-bind="text: intellect"></span>
+			</li>
+		</ul>
 	</div>
 	<div class="span8">
 		<div class="row">
@@ -27,7 +70,7 @@
 			<input data-bind="value: $parent.className, returnAction: $parent.addClass, hasFocus: $parent.focusClassInput, valueUpdate: 'afterkeydown'" />
 		</div>
 	</div>
-	<div class="span2">
+	<div class="span1">
 
 	</div>
 </div>

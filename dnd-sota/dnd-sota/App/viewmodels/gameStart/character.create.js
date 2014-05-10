@@ -5,16 +5,20 @@ define(['services/session', 'services/game.objects', 'plugins/router', 'services
 	var initialized = false;
 	var focusNameInput = ko.observable(false);
 	var focusClassInput = ko.observable(false);
+	var focusOldOrNew = ko.observable(false);
 	var className = ko.observable();
 
-	var activate = function () {
+	var oldOrNew = ko.observable();
+
+	var attached = function () {
 		if (!initialized) {
 			character(datacontext.createEntity('Character', {}));
 			state(1);
 		}
-		focusNameInput.subscribe(function (newValue) {
-			focusNameInput(true);
+		focusOldOrNew.subscribe(function (newValue) {
+			focusOldOrNew(true);
 		});
+		focusOldOrNew(true);
 	};
 
 	var classTypesString = ko.computed(function () {
@@ -31,7 +35,7 @@ define(['services/session', 'services/game.objects', 'plugins/router', 'services
 	};
 
 	var charCreate = {
-		activate: activate,
+		attached: attached,
 		compositionComplete: compositionComplete,
 		classTypesString: classTypesString,
 		create: create,
@@ -39,21 +43,24 @@ define(['services/session', 'services/game.objects', 'plugins/router', 'services
 		focusNameInput: focusNameInput,
 		focusClassInput: focusClassInput,
 		focusIt: focusIt,
+		focusOldOrNew: focusOldOrNew,
 		character: character,
 		className: className,
+		oldOrNew: oldOrNew,
+		checkOldOrNew: checkOldOrNew,
 		state: state
 	};
 	return charCreate;
 
 	function focusIt () {
-		focusNameInput(true);
+		focusOldOrNew(true);
 	}
 
 	function create () {
 		if (character() && character().name()) {
 			if (character().name().toLowerCase() === 'shavs') {
 				datacontext.saveEntity(character());
-				state(2);
+				state(3);
 				focusNameInput(false);
 				focusClassInput(true);
 				character().strength(makeRandom(15, 15));
@@ -67,7 +74,7 @@ define(['services/session', 'services/game.objects', 'plugins/router', 'services
 				return true;
 			} else {
 				datacontext.saveEntity(character());
-				state(2);
+				state(3);
 				focusNameInput(false);
 				focusClassInput(true);
 				character().strength(makeRandom(1, 15));
@@ -81,6 +88,24 @@ define(['services/session', 'services/game.objects', 'plugins/router', 'services
 				character().hitPoints(makeRandom(2, 8) + 10);
 			}
 		}
+	}
+
+	function checkOldOrNew () {
+		// Check old or new
+		if (oldOrNew() && oldOrNew().toLowerCase() === 'old') {
+			// Set settings to old
+			session.setSettingsOld();
+			// Set state to 2
+			state(2);
+			focusNameInput(true);
+		} else if (oldOrNew() && oldOrNew().toLowerCase() === 'new') {
+			// Set settings to old
+			session.setSettingsNew();
+			// Set state to 2
+			state(2);
+			focusNameInput(true);
+		}
+		oldOrNew(null);
 	}
 
 	function makeRandom(min, max) {
