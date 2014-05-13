@@ -655,9 +655,13 @@ define(['services/session', 'services/datacontext', 'plugins/router', 'services/
 	}
 
 	function wield() {
+		if (player().classType().name() === 'FIGHTER') {
 		// Ask which weapon to hold
-		messageQueue.addMessage("WHICH WEAPON WILL YOU HOLD, NUM OF WEAPON", true);
-		isWielding(true);
+			messageQueue.addMessage("WHICH WEAPON WILL YOU HOLD, NUM OF WEAPON", true);
+			isWielding(true);
+		} else {
+			messageQueue.addMessage("ONLY FIGHTERS CAN WIELD", true);
+		}
 	}
 
 	function moveLeft() {
@@ -689,18 +693,22 @@ define(['services/session', 'services/datacontext', 'plugins/router', 'services/
 
 	function moveEnemy(newX, newY) {
 		if (enemy()) {
-			var currentPosition = enemy().position();
-			var oldTile = datacontext.getTileByCoord(null, currentPosition.x(), currentPosition.y(), map().id());
-			var newTile = datacontext.getTileByCoord(null, newX, newY, map().id());
-			// Check for obstruction
-			if (newTile) {
-				if (!checkIfOccupied(newTile)) {
-					//enemyOccupyTile(newTile);
-					// Move the tile enemy entity to the new tile
-					var oldTileEnemy = oldTile.enemy();
-					newTile.enemy(oldTileEnemy);
-					clearTile(oldTile, true);
-					enemyOccupyTile(newTile);
+			var playerTile = findPlayer();
+			var enemyTile = findEnemy();
+			if (getDistanceBetweenTiles(playerTile, enemyTile) > 1) {
+				var currentPosition = enemy().position();
+				var oldTile = datacontext.getTileByCoord(null, currentPosition.x(), currentPosition.y(), map().id());
+				var newTile = datacontext.getTileByCoord(null, newX, newY, map().id());
+				// Check for obstruction
+				if (newTile) {
+					if (!checkIfOccupied(newTile)) {
+						//enemyOccupyTile(newTile);
+						// Move the tile enemy entity to the new tile
+						var oldTileEnemy = oldTile.enemy();
+						newTile.enemy(oldTileEnemy);
+						clearTile(oldTile, true);
+						enemyOccupyTile(newTile);
+					}
 				}
 			}
 		}
