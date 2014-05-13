@@ -152,11 +152,11 @@ define(['services/session', 'services/datacontext', 'plugins/router', 'services/
 					if (thisSpell) {
 						player().spell(thisSpell);
 						messageQueue.addMessage('YOU ARE CASTING ' + thisSpell.name(), false);
+						castSpell();
 					} else {
 						messageQueue.addMessage('SORRY YOU DONT HAVE THAT SPELL', false);
 					}
 					gameInput(null);
-					castSpell();
 				}
 				isCasting(false);
 			}
@@ -432,7 +432,7 @@ define(['services/session', 'services/datacontext', 'plugins/router', 'services/
 	function useMagic() {
 		// Ask which door to open
 		//gameMessage("MAGIC");
-		if (player().weapon()) {
+		if (player().weapon() && player().weapon().name() !== 'FISTS') {
 			messageQueue.addMessage('YOU CANT USE MAGIC WITH WEAPON IN HAND', false);
 		} else if (player().classType().name().toLowerCase() === 'fighter') {
 			messageQueue.addMessage('YOU CANT USE MAGIC YOUR NOT A MAGIC USER', false);
@@ -443,15 +443,16 @@ define(['services/session', 'services/datacontext', 'plugins/router', 'services/
 	}
 
 	function castSpell() {
+		var casted = true;
 		var className = player().classType().name().toLowerCase().toLowerCase();
 		if (className === 'cleric' || className ===  'wizard') {
 			var thisSpell = player().spell();
 			if (thisSpell.id() == 1) {
 				// Cast kill
-				attackLoop(thisSpell, 'CASTING');
+				casted = checkSpellRangeAndAttack(thisSpell);
 			} else if (thisSpell.id()  == 2) {
 				// Cast magic missle 2
-				attackLoop(thisSpell, 'CASTING');
+				casted = checkSpellRangeAndAttack(thisSpell);
 			} else if (thisSpell.id()  == 3) {
 				// CAST cure light
 				healLoop(thisSpell.damage());
@@ -460,10 +461,10 @@ define(['services/session', 'services/datacontext', 'plugins/router', 'services/
 				messageQueue.addMessage('NO TRAPS FOUND!', false);
 			} else if (thisSpell.id()  == 5) {
 				// CAST magic missle 1
-				attackLoop(thisSpell, 'CASTING');
+				casted = checkSpellRangeAndAttack(thisSpell);
 			} else if (thisSpell.id()  == 6) {
 				// CAST magic missle 3				
-				attackLoop(thisSpell, 'CASTING');
+				casted = checkSpellRangeAndAttack(thisSpell);
 			} else if (thisSpell.id()  == 7) {
 				// CAST cure light
 				healLoop(thisSpell.damage());
@@ -478,11 +479,27 @@ define(['services/session', 'services/datacontext', 'plugins/router', 'services/
 			if (thisSpell) {
 				// Set spell to null
 				player().spell(null);
-				// Remove the spell since it is used already
-				player().spells.remove(thisSpell);
+				// If the spell was cast successfully,
+				if (casted) {
+					// Remove the spell since it is used already
+					player().spells.remove(thisSpell);					
+				}
 			}
 			// Player is no longer casting
 			isCasting(false);
+		}
+	}
+
+	function checkSpellRangeAndAttack(spell) {
+		var enemyTile = findEnemy();
+		var playerTile = findPlayer();
+		var dist = getDistanceBetweenTiles(playerTile, enemyTile);
+		if (dist > spell.range()) {
+			messageQueue.addMessage("ENEMY IS TOO FAR AWAY FOR THIS SPELL", false);
+			return false;
+		} else {
+			attackLoop(spell, 'CASTING');
+			return true;
 		}
 	}
 
