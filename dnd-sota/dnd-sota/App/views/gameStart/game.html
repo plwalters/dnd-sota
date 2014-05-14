@@ -64,14 +64,14 @@
 		</ul>
 		<h3>WEAPONS</h3>
 		<ul data-bind="foreach: weapons">
-			<li>
+			<li data-bind="click: function () { $parents[2].clickWeapon($index); }, css: { 'clickable': $parents[2].isWielding() }">
 				<strong><span data-bind="text: $index() + 1"></span>-<span data-bind="text: name"></span> - DMG: <span data-bind="text: damage"></span></strong>
 			</li>
 		</ul>
 		<div data-bind="visible: (classType() && classType().name() !== 'FIGHTER') ">
 			<h3>SPELLS</h3>
 			<ul data-bind="foreach: spells">
-				<li>
+				<li data-bind="click: function () { $parents[2].clickSpell($index); }, css: { 'clickable': $parents[2].isCasting() }">
 					<strong><span data-bind="text: $index() + 1"></span>-<span data-bind="text: name"></span> - DMG: <span data-bind="text: damage"></span></strong>
 				</li>
 			</ul>
@@ -97,8 +97,8 @@
 	<div class="span2" data-bind="visible: $parent.session.settings().ShowInstructions">
 		<h3>INSTRUCTIONS</h3>
 		<ul data-bind="foreach: $parent.instructions">
-			<li>
-				<span data-bind="text: $data"></span>
+			<li class="clickable" data-bind="click: $parents[1].clickInstruction">
+				<span data-bind="text: command"></span> - <span data-bind="text: text"></span>
 			</li>
 		</ul>
 		<div data-bind="visible: ($parent.player() && $parent.player().classType() && $parent.player().classType().name() !== 'FIGHTER') ">

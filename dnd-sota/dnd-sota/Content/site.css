@@ -80,3 +80,7 @@ textarea.example {
 .invalid {
   border: 2px solid red;
 }
+
+.clickable {
+  cursor: pointer;
+}

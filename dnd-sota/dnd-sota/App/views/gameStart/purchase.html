@@ -55,14 +55,19 @@
 		<div data-bind="visible: (state() === 1 || state() === 2 )">
 			<h5>BUYING WEAPONS</h5>
 			<div class="" data-bind="visible: state() === 1">
-				<h5>FAST OR NORM</h5>
+				<span class="row">
+					<h4 class="clickable span4" data-bind="click: function () { clickItem('FAST'); }">FAST</h4><span class="span4"> OR </span><h4 class="clickable span4" data-bind="click: function () { clickItem('NORM'); }">NORM</h4>
+				</span>
 				<input data-bind="value: fastOrNorm, returnAction: chooseFastOrNorm, hasFocus: state() === 1, valueUpdate: 'afterkeydown'" />
 			</div>
 			<div class="" data-bind="visible: state() === 2">
 				<h5>NUMBER, ITEM, PRICE</h5>
 				<h5>DONE WHEN FINISHED</h5>
-				<ul data-bind="foreach: weaponTypes">
-					<li data-bind="text: (id() + ', ' + name() + ', ' + value())"></li>
+				<ul>
+					<li class="clickable"  data-bind=" click: function () { clickItem(0); }">0 - DONE</li>
+					<!-- ko foreach: weaponTypes -->
+					<li class="clickable" data-bind="text: (id() + ', ' + name() + ', ' + value()), click: function () { $parent.clickItem($index); }"></li>
+					<!-- /ko -->
 				</ul>
 				<input data-bind="value: weaponName, returnAction: addWeapon, hasFocus: state() === 2, valueUpdate: 'afterkeydown'" />
 			</div>
@@ -72,8 +77,11 @@
 			<div class="">
 				<h5>NUMBER, ITEM, PRICE</h5>
 				<h5>DONE WHEN FINISHED</h5>
-				<ul data-bind="foreach: items">
-					<li data-bind="text: (id() + ', ' + name() + ', ' + value())"></li>
+				<ul>
+					<li class="clickable"  data-bind=" click: function () { clickItem(0); }">0 - DONE</li>
+					<!-- ko foreach: items -->
+					<li class="clickable"  data-bind="text: (id() + ', ' + name() + ', ' + value()), click: function () { $parent.clickItem($index); }"></li>
+					<!-- /ko -->
 				</ul>
 				<input data-bind="value: itemName, returnAction: addItem, hasFocus: state() === 3, valueUpdate: 'afterkeydown'" />
 			</div>

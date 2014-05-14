@@ -17,18 +17,29 @@ define(['services/session', 'services/datacontext', 'plugins/router', 'services/
 	var needToHideMap = ko.observable(false);
 	var isGameOver = ko.observable(false);
 	var instructions = [
-		'U,D,L,R - MOVE',
-		'2 - OPEN DOOR',
-		'3 - SEARCH',
-		'4 - SWITCH WEAPON',
-		'5 - FIGHT',
-		'7 - SAVE GAME',
-		'8 - USE MAGIC',
-		'9 - BUY MAGIC',
-		'10 - LOAD DUNGEON',
-		'11 - BUY HP',
-		'0 - PASS;'
+		new instruction('U', 'UP'),
+		new instruction('D', 'DOWN'),
+		new instruction('L', 'LEFT'),
+		new instruction('R', 'RIGHT'),
+		new instruction('2', 'OPEN DOOR'),
+		new instruction('3', 'SEARCH'),
+		new instruction('4', 'SWITCH WEAPON'),
+		new instruction('5', 'FIGHT'),
+		new instruction('6', 'LOOK'),
+		new instruction('7', 'SAVE GAME'),
+		new instruction('8', 'USE MAGIC'),
+		new instruction('9', 'BUY MAGIC'),
+		new instruction('10', 'LOAD DUNGEON'),
+		new instruction('11', 'BUY HP'),
+		new instruction('0', 'PASS')
 	];
+
+	function instruction(command, text) {
+		var self = this;
+		self.command = command;
+		self.text = text;
+	}
+
 	var availableSpells = ko.computed(function () {
 		var spellsList = gameObjects.spells();
 		// Get a list of spells the player doesn't have
@@ -103,6 +114,9 @@ define(['services/session', 'services/datacontext', 'plugins/router', 'services/
 	var game = {
 		activate: activate,
 		compositionComplete: compositionComplete,
+		clickSpell: clickSpell,
+		clickWeapon: clickWeapon,
+		clickInstruction: clickInstruction,
 		enterCommand: enterCommand,
 		focusGameInput: focusGameInput,
 		gameInput: gameInput,
@@ -112,6 +126,8 @@ define(['services/session', 'services/datacontext', 'plugins/router', 'services/
 		player: player,
 		centeredMap: centeredMap,
 		isGameOver: isGameOver,
+		isCasting: isCasting,
+		isWielding: isWielding,
 		restartGame: restartGame,
 		availableSpells: availableSpells,
 		session: session
@@ -306,6 +322,35 @@ define(['services/session', 'services/datacontext', 'plugins/router', 'services/
 			}
 			gameInput(null);
 			checkIfEnemyClose();
+		}
+	}
+
+	function clickInstruction(sender) {
+		if (sender && sender.command) {
+			gameInput(sender.command);
+			enterCommand();
+		} else {
+			console.log('No sender');
+		}
+	}
+
+	function clickSpell(sender) {
+		var unwrappedSender = (ko.unwrap(sender) + 1).toString();
+		if (!!unwrappedSender && isCasting()) {
+			gameInput(unwrappedSender);
+			enterCommand();
+		} else {
+			console.log('No spell sender');
+		}
+	}
+
+	function clickWeapon(sender) {
+		var unwrappedSender = (ko.unwrap(sender) + 1).toString();
+		if (!!unwrappedSender && isWielding()) {
+			gameInput(unwrappedSender);
+			enterCommand();
+		} else {
+			console.log('No spell sender');
 		}
 	}
 

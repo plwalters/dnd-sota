@@ -4,7 +4,9 @@
 	</div>
 	<div class="span8">
 		<div>
-			<h5>OLD OR NEW</h5>
+			<span class="row">
+				<h4 class="clickable span4" data-bind="click: function () { clickItem('OLD'); }">OLD</h4><span class="span4"> OR </span><h4 class="clickable span4" data-bind="click: function () { clickItem('NEW'); }">NEW</h4>
+			</span>
 			<input data-bind="value: oldOrNew, returnAction: checkOldOrNew, hasFocus: focusOldOrNew, valueUpdate: 'afterkeydown'" />
 		</div>
 	</div>	
@@ -66,7 +68,11 @@
 		<div data-bind="with: character">
 			<h5>CLASSIFICATION</h5>
 			<h5>WHICH DO YOU WANT TO BE</h5>
-			<h5 data-bind="text: $parent.classTypesString"></h5>
+			<ul data-bind="foreach: $parent.classTypes">
+				<li data-bind="click: function () { $parents[1].clickItem(name()); }">
+					<h4 data-bind="text: name"></h4>
+				</li>
+			</ul>
 			<input data-bind="value: $parent.className, returnAction: $parent.addClass, hasFocus: $parent.focusClassInput, valueUpdate: 'afterkeydown'" />
 		</div>
 	</div>

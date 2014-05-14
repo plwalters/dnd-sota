@@ -1,6 +1,6 @@
 ﻿	define(['services/datacontext', 'services/map.creator'], function (datacontext, mapCreator) {
 
-	var weapons = ko.observableArray([	
+	var weapons = ko.observableArray([
 		datacontext.createEntity('Weapon', { id: 1, name: 'SWORD', damage: 5, value: 10, range: 1 } ),
 		datacontext.createEntity('Weapon', { id: 2, name: '2-H-SWORD', damage: 5, value: 15, range: 1 } ),
 		datacontext.createEntity('Weapon', { id: 3, name: 'DAGGER', damage: 3, value: 3, range: 3 } ),

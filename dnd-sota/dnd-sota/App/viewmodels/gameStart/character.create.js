@@ -7,6 +7,7 @@ define(['services/session', 'services/game.objects', 'plugins/router', 'services
 	var focusClassInput = ko.observable(false);
 	var focusOldOrNew = ko.observable(false);
 	var className = ko.observable();
+	var classTypes = ko.computed(gameObjects.classTypes);
 
 	var oldOrNew = ko.observable();
 
@@ -20,6 +21,20 @@ define(['services/session', 'services/game.objects', 'plugins/router', 'services
 		});
 		focusOldOrNew(true);
 	};
+
+	function clickItem (sender) {
+		if (state() === 1) {
+			oldOrNew(sender);	
+			checkOldOrNew();
+		} else if (state() === 2) {
+
+		} else {
+			var thisInput = sender;
+			console.log('This input - ', thisInput);
+			className(thisInput);
+			addClass();
+		}
+	}
 
 	var classTypesString = ko.computed(function () {
 		var thisString = "";
@@ -36,6 +51,7 @@ define(['services/session', 'services/game.objects', 'plugins/router', 'services
 
 	var charCreate = {
 		attached: attached,
+		clickItem: clickItem,
 		compositionComplete: compositionComplete,
 		classTypesString: classTypesString,
 		create: create,
@@ -47,6 +63,7 @@ define(['services/session', 'services/game.objects', 'plugins/router', 'services
 		character: character,
 		className: className,
 		oldOrNew: oldOrNew,
+		classTypes: classTypes,
 		checkOldOrNew: checkOldOrNew,
 		state: state
 	};

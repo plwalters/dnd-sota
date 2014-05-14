@@ -44,9 +44,26 @@ define(['services/session', 'services/game.objects', 'plugins/router', 'services
 		addItem: addItem,
 		state: state,
 		weaponTypes: weaponTypes,
-		items: items
+		items: items,
+		clickItem: clickItem
 	};
 	return purchase;
+
+	function clickItem (sender) {
+		if (state() === 1) {
+			fastOrNorm(sender);	
+			chooseFastOrNorm();
+		} else if (state() === 2) {
+			var thisInput = sender === 0 ? '0' : (ko.unwrap(sender) + 1).toString();
+			weaponName(thisInput);
+			addWeapon();
+		} else {
+			var thisInput = sender === 0 ? '0' :(ko.unwrap(sender) + 7).toString();
+			console.log('This input - ', thisInput);
+			itemName(thisInput);
+			addItem();
+		}
+	}
 
 	function chooseFastOrNorm() {		
 		if (fastOrNorm()) {
@@ -60,10 +77,11 @@ define(['services/session', 'services/game.objects', 'plugins/router', 'services
 	}
 
 	function addItem() {
+		console.log(itemName());
 		if (itemName()) {
 			var thisItemName = itemName().toLowerCase();
 			// Check if it is the exit code
-			if (state() === 3 && thisItemName === '-1' || state() === 3 && thisItemName === 'done') {				
+			if (state() === 3 && thisItemName === '0' || state() === 3 && thisItemName === 'done') {				
             	return router.navigate('game'); 
 			}
 			// Try to get the weapon by name first
@@ -96,7 +114,7 @@ define(['services/session', 'services/game.objects', 'plugins/router', 'services
 		if (weaponName()) {
 			var thisWeaponName = weaponName().toLowerCase();
 			// Check if it is going to buy items instead now
-			if (thisWeaponName === '-1' || thisWeaponName === 'done') {
+			if (thisWeaponName === '0' || thisWeaponName === 'done') {
 				// Add fists as a weapon
 				var fists = ko.utils.arrayFirst(gameObjects.weapons(), function (wep) {
 					return wep.name() === 'FISTS';
