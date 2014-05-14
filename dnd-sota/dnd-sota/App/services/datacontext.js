@@ -20,6 +20,7 @@
         saveEntity: saveEntity,
         getTileByCoord: getTileByCoord,
         getMap: getMap,
+        getMapsList: getMapsList,
         createPlayerPosition: createPlayerPosition,
         createEnemyPosition: createEnemyPosition,
         findPlayerStart: findPlayerStart,
@@ -40,6 +41,19 @@
 
         // Set it to this object and return
         return observable(thisMap[0]);
+    }
+
+    function getMapsList (observable) {
+        // Get the map from cachec
+
+        // Get the tile by coordinates and map
+        var query = EntityQuery.from('Maps')
+            .toType('Map');
+
+        theseMaps = manager.executeQueryLocally(query);
+
+        // Set it to this object and return
+        return observable(theseMaps);
     }
 
     function getTileByCoord (observable, xCoord, yCoord, mapId) {

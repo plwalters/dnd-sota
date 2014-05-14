@@ -30,7 +30,6 @@
 				xvar += 1;
 			} else if (thisTile === 'M' || thisTile === 'G' || thisTile === 'T' || thisTile === 'S' || thisTile === 'B' || thisTile === 'J' || thisTile === 'O' || thisTile === 'N' || thisTile === 'N') {
 				// Create an enemy start tile that is empty until the enemy is spawned
-				console.log(thisTile);
 				var thisTileSpecifically = datacontext.createEntity('Tile', { name: 'Tile', mapId: thisMap.id, occupied: false, x: xvar, y: yvar, image: " ", enemySpawnOrder: enemyOrder, enemySpawnType: thisTile } );
 				// Don't create the enemy on spawn, let the game do that
 	        	// var thisTileEnemy = datacontext.createComplexType('TileEnemy', { id: enemyOrder, name: "GOBLIN", hitPoints: 10, damage: 2 });

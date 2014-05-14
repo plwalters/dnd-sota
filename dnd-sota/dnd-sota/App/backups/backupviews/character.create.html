@@ -39,6 +39,9 @@
 				<span>NAME: </span><span data-bind="text: name"></span>
 			</li>
 			<li>
+				<span>CLASS: </span><span data-bind="with: classType"><span data-bind="text: name"></span></span>
+			</li>
+			<li>
 				<span>HIT POINTS: </span><span data-bind="text: hitPoints"></span>
 			</li>
 			<li>
@@ -69,7 +72,7 @@
 			<h5>CLASSIFICATION</h5>
 			<h5>WHICH DO YOU WANT TO BE</h5>
 			<ul data-bind="foreach: $parent.classTypes">
-				<li data-bind="click: function () { $parents[1].clickItem(name()); }">
+				<li class="clickable" data-bind="click: function () { $parents[1].clickItem(name()); }">
 					<h4 data-bind="text: name"></h4>
 				</li>
 			</ul>

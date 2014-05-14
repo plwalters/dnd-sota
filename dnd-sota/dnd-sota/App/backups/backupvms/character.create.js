@@ -30,7 +30,6 @@ define(['services/session', 'services/game.objects', 'plugins/router', 'services
 
 		} else {
 			var thisInput = sender;
-			console.log('This input - ', thisInput);
 			className(thisInput);
 			addClass();
 		}

@@ -59,7 +59,6 @@ define(['services/session', 'services/game.objects', 'plugins/router', 'services
 			addWeapon();
 		} else {
 			var thisInput = sender === 0 ? '0' :(ko.unwrap(sender) + 7).toString();
-			console.log('This input - ', thisInput);
 			itemName(thisInput);
 			addItem();
 		}
@@ -68,16 +67,15 @@ define(['services/session', 'services/game.objects', 'plugins/router', 'services
 	function chooseFastOrNorm() {		
 		if (fastOrNorm()) {
 			if (fastOrNorm() === 'FAST') {
-				console.log("IT DOESN'T MATTER WHAT YOU TYPE!");
+
 			} else {
-				console.log("IT DOESN'T MATTER WHAT YOU TYPE!");
+				
 			}
 			return state(2);
 		}
 	}
 
 	function addItem() {
-		console.log(itemName());
 		if (itemName()) {
 			var thisItemName = itemName().toLowerCase();
 			// Check if it is the exit code

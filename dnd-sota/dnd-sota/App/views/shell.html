@@ -2,7 +2,6 @@
     <div class="navbar navbar-fixed-top">
         <div class="navbar-inner">
             <a class="brand" data-bind="attr: { href: router.navigationModel()[0].hash }">
-                <i class="icon-home"></i>
                 <span>D&D SotA - © 1977-2014 Richard Garriott - Ported by Kadumel - @pwkad</span>
             </a>
             <ul class="nav" data-bind="foreach: router.navigationModel">
@@ -10,10 +9,7 @@
                     <a data-bind="attr: { href: hash }, html: title"></a>
                 </li>
             </ul>
-            <div class="loader pull-right" data-bind="css: { active: router.isNavigating }">
-                <i class="icon-spinner icon-2x icon-spin"></i>
-            </div>
         </div>
-    </div>    
+    </div>
     <div class="container-fluid page-host" data-bind="router: { cacheViews:true }"></div>
 </div>

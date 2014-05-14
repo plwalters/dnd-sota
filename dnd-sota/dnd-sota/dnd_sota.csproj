@@ -199,18 +199,18 @@
     <Content Include="App\services\map.creator.js" />
     <Content Include="App\services\message.queue.js" />
     <Content Include="App\services\session.js" />
-    <Content Include="App\viewmodels\gameStart\character.create.js" />
+    <Content Include="App\backups\backupvms\character.create.js" />
     <Content Include="App\viewmodels\gameStart\designer.js" />
     <Content Include="App\viewmodels\gameStart\game.js" />
-    <Content Include="App\viewmodels\gameStart\purchase.js" />
+    <Content Include="App\backups\backupvms\purchase.js" />
     <Content Include="App\viewmodels\about.js" />
     <Content Include="App\viewmodels\home.js" />
     <Content Include="App\viewmodels\shell.js" />
     <Content Include="App\viewmodels\start.js" />
-    <Content Include="App\views\gameStart\character.create.html" />
+    <Content Include="App\backups\backupviews\character.create.html" />
     <Content Include="App\views\gameStart\designer.html" />
     <Content Include="App\views\gameStart\game.html" />
-    <Content Include="App\views\gameStart\purchase.html" />
+    <Content Include="App\backups\backupviews\purchase.html" />
     <Content Include="App\views\about.html" />
     <Content Include="App\views\home.html" />
     <Content Include="App\views\shell.html" />
@@ -308,6 +308,7 @@
     <Content Include="Views\Durandal\Index.cshtml" />
     <Content Include="Views\Durandal\_splash.cshtml" />
     <Content Include="Views\Shareda\_ViewStart.cshtml" />
+    <Content Include="Index.html" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -315,9 +316,7 @@
       <DependentUpon>Web.config</DependentUpon>
     </None>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="App_Data\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />
     <Content Include="fonts\glyphicons-halflings-regular.ttf" />

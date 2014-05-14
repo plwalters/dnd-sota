@@ -13,11 +13,10 @@
             
     	}
         router.map([
-            { route: '', title:'Game', moduleId: 'viewmodels/gameStart/character.create', nav: true },
+            { route: '', title:'Game', moduleId: 'viewmodels/gameStart/game', nav: true },
             { route: 'home', title:'Home', moduleId: 'viewmodels/home' },
             { route: 'about', title:'About', moduleId: 'viewmodels/about', nav: true },
             { route: 'designer', title:'Designer', moduleId: 'viewmodels/gameStart/designer', nav: true },
-            { route: 'purchase', title:'Purchase', moduleId: 'viewmodels/gameStart/purchase' },
             { route: 'game', title:'Game', moduleId: 'viewmodels/gameStart/game' }
         ]).buildNavigationModel();
         

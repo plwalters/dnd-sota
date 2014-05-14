@@ -1,3 +1,5 @@
+<!-- Text entry area -->
+
 <div class="row">
 	<div class="span2">
 
@@ -5,6 +7,13 @@
 	<div class="span8">
 		<div class="row">
 			<h3 data-bind="text: gameMessage"></h3>
+		</div>
+		<div class="row" data-bind="visible: !map() && state() === 6">
+			<ul data-bind="foreach: maps">
+				<li class="clickable" data-bind="click: function () { $parent.clickMap(id); }">
+					<strong><span data-bind="text: id"></span> - <span data-bind="text: name"></span></strong>
+				</li>
+			</ul>
 		</div>
 		<div class="row">
 			<input data-bind="value: gameInput, returnAction: enterCommand, hasFocus: focusGameInput, valueUpdate: 'afterkeydown', disable: isGameOver" />
@@ -14,15 +23,24 @@
 		<button data-bind="click: restartGame, visible: isGameOver">START OVER</button>
 	</div>
 </div>
-<div class="row gameboard" data-bind="with: centeredMap">
+
+
+<!-- Main game area -->
+
+<div class="row gameboard">
 	<div class="span1">
 
 	</div>
-	<div class="span2" data-bind="with: $parent.player, visible: $parent.session.settings().ShowAttributes">
+
+	<!-- Left side panel -->
+	<div class="span2" data-bind="with: player, visible: session.settings().ShowAttributes">
 		<h3>ATTRIBUTES</h3>
 		<ul>
 			<li>
 				<span>NAME: </span><span data-bind="text: name"></span>
+			</li>
+			<li>
+				<span>CLASS: </span><span data-bind="with: classType"><span data-bind="text: name"></span></span>
 			</li>
 			<li>
 				<span>HIT POINTS: </span><span data-bind="text: hitPoints"></span>
@@ -64,14 +82,14 @@
 		</ul>
 		<h3>WEAPONS</h3>
 		<ul data-bind="foreach: weapons">
-			<li data-bind="click: function () { $parents[2].clickWeapon($index); }, css: { 'clickable': $parents[2].isWielding() }">
+			<li data-bind="click: function () { $parents[1].clickWeapon($index); }, css: { 'clickable': $parents[1].isWielding() }">
 				<strong><span data-bind="text: $index() + 1"></span>-<span data-bind="text: name"></span> - DMG: <span data-bind="text: damage"></span></strong>
 			</li>
 		</ul>
 		<div data-bind="visible: (classType() && classType().name() !== 'FIGHTER') ">
 			<h3>SPELLS</h3>
 			<ul data-bind="foreach: spells">
-				<li data-bind="click: function () { $parents[2].clickSpell($index); }, css: { 'clickable': $parents[2].isCasting() }">
+				<li data-bind="click: function () { $parents[1].clickSpell($index); }, css: { 'clickable': $parents[1].isCasting() }">
 					<strong><span data-bind="text: $index() + 1"></span>-<span data-bind="text: name"></span> - DMG: <span data-bind="text: damage"></span></strong>
 				</li>
 			</ul>
@@ -83,6 +101,76 @@
 			</li>
 		</ul>
 	</div>
+
+
+
+	<!-- Center panel -->
+
+	<!-- ko if: state() === 1 -->
+	<div class="span7">
+		<span class="row">
+			<h4 class="clickable span4" data-bind="click: function () { clickItem('OLD'); }">OLD</h4><span class="span4"> OR </span><h4 class="clickable span4" data-bind="click: function () { clickItem('NEW'); }">NEW</h4>
+		</span>
+	</div>
+	<!-- /ko -->
+
+	<!-- ko if: state() === 2 -->
+	<div class="span7">
+		<div data-bind="with: player">
+			<h5>ENTER NAME ABOVE</h5>
+		</div>
+	</div>
+	<!-- /ko -->
+
+	<!-- ko if: state() === 3 -->	
+	<div class="span7">
+		<div class="row">
+			<h2><a href="https://www.shroudoftheavatar.com/?p=39149">WHY DOES THIS GAME LOOK OLD?</a></h2>
+		</div>
+		<div data-bind="with: player">
+			<ul data-bind="foreach: $parent.classTypes">
+				<li class="clickable" data-bind="click: function () { $parents[1].clickItem(name()); }">
+					<h4 data-bind="text: name"></h4>
+				</li>
+			</ul>
+		</div>
+	</div>
+	<!-- /ko -->
+
+	<!-- ko if: state() === 4 -->
+	<div class="span7">	
+		<div>
+			<div>
+				<h5>NUMBER, ITEM, PRICE</h5>
+				<ul>
+					<li class="clickable"  data-bind=" click: function () { clickItem(0); }">0 - DONE</li>
+					<!-- ko foreach: weaponTypes -->
+					<li class="clickable" data-bind="text: (id() + ', ' + name() + ', ' + value()), click: function () { $parent.clickItem($index); }"></li>
+					<!-- /ko -->
+				</ul>
+			</div>
+		</div>
+	</div>
+	<!-- /ko -->
+
+	<!-- ko if: state() === 5 -->
+	<div class="span7">
+		<div>
+			<div class="">
+				<h5>NUMBER, ITEM, PRICE</h5>
+				<ul>
+					<li class="clickable"  data-bind=" click: function () { clickItem(0); }">0 - DONE</li>
+					<!-- ko foreach: items -->
+					<li class="clickable"  data-bind="text: (id() + ', ' + name() + ', ' + value()), click: function () { $parent.clickItem($index); }"></li>
+					<!-- /ko -->
+				</ul>
+			</div>
+		</div>
+	</div>
+	<!-- /ko -->
+
+	<!-- ko if: state() === 6 -->
+	<!-- ko with: centeredMap -->
 	<div class="span7" data-bind="visible: $parent.session.settings().ShowMap">
 		<ul class="unstyled " data-bind="foreach: rows">
 			<li>
@@ -94,23 +182,32 @@
 			</li>
 		</ul>
 	</div>
-	<div class="span2" data-bind="visible: $parent.session.settings().ShowInstructions">
+	<!-- /ko -->
+	<!-- /ko -->
+
+
+
+
+
+
+	<!-- Right side panel -->
+	<div class="span2" data-bind="visible: session.settings().ShowInstructions">
 		<h3>INSTRUCTIONS</h3>
-		<ul data-bind="foreach: $parent.instructions">
-			<li class="clickable" data-bind="click: $parents[1].clickInstruction">
+		<ul data-bind="foreach: instructions">
+			<li class="clickable" data-bind="click: $parent.clickInstruction">
 				<span data-bind="text: command"></span> - <span data-bind="text: text"></span>
 			</li>
 		</ul>
-		<div data-bind="visible: ($parent.player() && $parent.player().classType() && $parent.player().classType().name() !== 'FIGHTER') ">
+		<div data-bind="visible: (player() && player().classType() && player().classType().name() !== 'FIGHTER') ">
 			<h3>AVAILABLE SPELLS</h3>
-			<ul data-bind="foreach: $parent.availableSpells">
+			<ul data-bind="foreach: availableSpells">
 				<li>
 					<strong><span data-bind="text: $index() + 1"></span>-<span data-bind="text: name"></span>- COST: <span data-bind="text: value"></span></strong>
 				</li>
 			</ul>
 		</div>
 	</div>
-	<div class="span2" data-bind="visible: !$parent.session.settings().ShowInstructions()">
+	<div class="span2" data-bind="visible: !session.settings().ShowInstructions()">
 		<h3>INSTRUCTIONS</h3>
 		<ul>
 			<li>
