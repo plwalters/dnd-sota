@@ -58,6 +58,7 @@
 	                hitPoints: { dataType: "Int64" },
 	                damage: { dataType: "Int64" },
 	                value: { dataType: "Int64" },
+	                hitChanceMultiplier: { dataType: "Int64" },
 		            position: { complexTypeName: "Position:#DndSota", isScalar: true }
 	            }
 	        });
@@ -181,7 +182,7 @@
 	                id: { dataType: "Int64", isPartOfKey: true },
 	                name: { dataType: "String" },
 	                image: { dataType: "String" },
-	                designerImage: { dataType: "String" },
+	                designerImage: { dataType: "String" }
 	            }
 	        });
 
@@ -219,7 +220,8 @@
 	                hitPoints: { dataType: "Int64" },
 	                damage: { dataType: "Int64" },
 	                value: { dataType: "Int64" },
-	                image: {dataType: "String" },
+	                image: { dataType: "String" },
+	                hitChanceMultiplier: { dataType: "Int64" },
 		            position: { complexTypeName: "Position:#DndSota", isScalar: true }
 	            }
 	        });

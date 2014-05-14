@@ -128,7 +128,6 @@ define(['services/session', 'services/datacontext', 'plugins/router', 'services/
 	function activate() {
 		player(session.currentPlayer());
 		if (!player()) {
-			console.log('Creating a player');
 			player(datacontext.createEntity('Character', {}));
 			state(1);
 			session.currentPlayer(player());
@@ -357,7 +356,7 @@ define(['services/session', 'services/datacontext', 'plugins/router', 'services/
 						if (player().gold() > thisCost) {
 							// Reduce the players gold and add HP
 							player().gold(player().gold() - thisCost);
-							player().hitPoints(player().hitPoints() + thisInt);
+							player().hitPoints(player().hitPoints() + (thisInt * 5));
 							messageQueue.addMessage('PURCHASED ' + thisInt + ' HP', false);
 						} else {
 							messageQueue.addMessage('YOU CANT AFFORD THAT ', false);
@@ -481,7 +480,7 @@ define(['services/session', 'services/datacontext', 'plugins/router', 'services/
 
 	function create (name) {
 		if (player() && name) {
-			player().name(name);
+			player().name(name.toUpperCase());
 			if (name.toLowerCase() === 'shavs') {
 				datacontext.saveEntity(player());
 				state(3);
@@ -806,7 +805,7 @@ define(['services/session', 'services/datacontext', 'plugins/router', 'services/
 							}
 						} else {
 							// It's not a bow, throw it!
-							attackLoop(thisWeapon, 'SWING');
+							attackLoop(thisWeapon, 'THROWN');
 							player().weapons.remove(thisWeapon);
 							player().weapon(null);
 						}
@@ -825,9 +824,16 @@ define(['services/session', 'services/datacontext', 'plugins/router', 'services/
 	function attackLoop(thisWeapon, action) {
 		var enemyName = enemy().name();
 		messageQueue.addMessage(enemyName + ", HP = " + enemy().hitPoints() + ". " + action, false);
-		var hitChance = makeRandom(1,2);
-		hitChance = hitChance == 1 ? true : false;
-		if (hitChance) {
+		var hitChance = makeRandom(1, 15);
+		var hitSuccess = false;
+		if (action === 'CASTING') {
+			// It's magic, check if hitchance is less than intelligence
+			hitSuccess = (hitChance < player().intellect());
+		} else {
+			// It's melee, check if hitchance is less than dexterity
+			hitSuccess = (hitChance < player().dexterity());
+		}
+		if (hitSuccess) {
 			// Hit the enemy
 			messageQueue.addMessage("HIT ENEMY ", false);
 			enemy().hitPoints(enemy().hitPoints() - thisWeapon.damage());
@@ -869,7 +875,7 @@ define(['services/session', 'services/datacontext', 'plugins/router', 'services/
 					return enemyType.image() === thisTilesEnemyType;
 				});
 				if (thisEnemyType) {
-					enemy(datacontext.createComplexType('TileEnemy', { name: thisEnemyType.name(), hitPoints: thisEnemyType.hitPoints(), damage: thisEnemyType.damage(), value: thisEnemyType.value(), image: thisEnemyType.image() }));
+					enemy(datacontext.createComplexType('TileEnemy', { name: thisEnemyType.name(), hitPoints: thisEnemyType.hitPoints(), damage: thisEnemyType.damage(), value: thisEnemyType.value(), image: thisEnemyType.image(), hitChanceMultiplier: thisEnemyType.hitChanceMultiplier() }));
 					// If enemyPosition is empty there are no more monsters
 					datacontext.createEnemyPosition(enemy(), enemyPosition.x(), enemyPosition.y());
 					if (enemy()) {
@@ -950,6 +956,7 @@ define(['services/session', 'services/datacontext', 'plugins/router', 'services/
 					clearTile(oldTile);
 					checkForItem(newTile);
 					occupyTile(newTile);
+					messageQueue.addMessage('YOU ARE AT (' + newTile.x() + ',' + newTile.y() + ')', false);
 				}
 			}
 		}
@@ -966,7 +973,6 @@ define(['services/session', 'services/datacontext', 'plugins/router', 'services/
 				// Check for obstruction
 				if (newTile) {
 					if (!checkIfOccupied(newTile)) {
-						//enemyOccupyTile(newTile);
 						// Move the tile enemy entity to the new tile
 						var oldTileEnemy = oldTile.enemy();
 						newTile.enemy(oldTileEnemy);
@@ -983,14 +989,14 @@ define(['services/session', 'services/datacontext', 'plugins/router', 'services/
 			var thisItem = tile.item();
 			messageQueue.addMessage('AH.......' + thisItem.name() + '.........', true);
 			if (thisItem.name() === 'GOLD') {
-				messageQueue.addMessage(thisItem.value() + ' PIECES', true);				
+				messageQueue.addMessage(thisItem.value() + ' PIECES', true);
+			}
+			if (thisItem.value()) {
+				player().gold(player().gold() + thisItem.value());
 			}
 			tile.item().id(null);
 			tile.item().name(null);
 			tile.item().value(null);
-			if (thisItem.value()) {
-				player().gold(player().gold() + thisItem.value());
-			}
 		} else {
 			// gameMessage('ENTER COMMAND');
 		}
@@ -1058,9 +1064,12 @@ define(['services/session', 'services/datacontext', 'plugins/router', 'services/
 			// If so attack the player
 			// Have the monster attack the player		
 			var enemyName = enemy().name();
-			var hitChance = makeRandom(1,2);
-			hitChance = hitChance == 1 ? true : false;
-			if (hitChance) {
+			var armorMultiplier = player().item() ? parseInt(player().item().defense()) : 0;
+			var hitChance = makeRandom(1, (15 + enemy().hitChanceMultiplier()));
+			var hitSuccess = false;
+			// It's melee, check if hitchance is less than dexterity
+			hitSuccess = (hitChance < (7 + armorMultiplier));
+			if (hitSuccess) {
 				// Hit the enemy
 				messageQueue.addMessage(enemyName + ' SCORES A HIT', false);
 				player().hitPoints(player().hitPoints() - enemy().damage());

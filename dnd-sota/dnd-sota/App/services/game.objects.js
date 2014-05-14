@@ -6,20 +6,20 @@
 		datacontext.createEntity('Weapon', { id: 3, name: 'DAGGER', damage: 3, value: 3, range: 3 } ),
 		datacontext.createEntity('Weapon', { id: 4, name: 'MACE', damage: 6, value: 15, range: 1 } ),
 		datacontext.createEntity('Weapon', { id: 5, name: 'SPEAR', damage: 7, value: 15, range: 5 } ),
-		datacontext.createEntity('Weapon', { id: 6, name: 'BOW', damage: 3, value: 15, range: 5 } ),
+		datacontext.createEntity('Weapon', { id: 6, name: 'BOW', damage: 3, value: 15, range: 7 } ),
 		datacontext.createEntity('Weapon', { id: 7, name: 'FISTS', damage: 1, value: 0, range: 1 } )
 	]);
 
 	var enemyTypes = ko.observableArray([	
-		datacontext.createEntity('EnemyType', { id: 1, image: 'G', name: 'GOBLIN', level: 1, hitPoints: 13, damage: 5, value: 500, range: 1 } ),
-		datacontext.createEntity('EnemyType', { id: 2, image: 'T', name: 'TROLL', level: 1, hitPoints: 15, damage: 5, value: 1000, range: 1 } ),
-		datacontext.createEntity('EnemyType', { id: 3, image: 'S', name: 'SKELETON', level: 1, hitPoints: 22, damage: 5, value: 50, range: 1 } ),
-		datacontext.createEntity('EnemyType', { id: 4, image: 'B', name: 'BALROG', level: 1, hitPoints: 18, damage: 5, value: 5000, range: 1 } ),
-		datacontext.createEntity('EnemyType', { id: 5, image: 'J', name: 'OCHRE JELLY', level: 1, hitPoints: 11, damage: 5, value: 0, range: 1 } ),
-		datacontext.createEntity('EnemyType', { id: 6, image: 'O', name: 'GREY OOZE', level: 1, hitPoints: 11, damage: 5, value: 0, range: 1 } ),
-		datacontext.createEntity('EnemyType', { id: 7, image: 'N', name: 'GNOME', level: 1, hitPoints: 13, damage: 5, value: 100, range: 1 } ),
-		datacontext.createEntity('EnemyType', { id: 8, image: 'K', name: 'KOBOLD', level: 1, hitPoints: 15, damage: 5, value: 500, range: 1 } ),
-		datacontext.createEntity('EnemyType', { id: 9, image: 'M', name: 'MUMMY', level: 1, hitPoints: 16, damage: 5, value: 100, range: 1 } )
+		datacontext.createEntity('EnemyType', { id: 1, image: 'G', name: 'GOBLIN', level: 1, hitPoints: 13, damage: 5, value: 500, range: 1, hitChanceMultiplier: 1 } ),
+		datacontext.createEntity('EnemyType', { id: 2, image: 'T', name: 'TROLL', level: 1, hitPoints: 15, damage: 5, value: 1000, range: 1, hitChanceMultiplier: 3 } ),
+		datacontext.createEntity('EnemyType', { id: 3, image: 'S', name: 'SKELETON', level: 1, hitPoints: 22, damage: 5, value: 50, range: 1, hitChanceMultiplier: 2 } ),
+		datacontext.createEntity('EnemyType', { id: 4, image: 'B', name: 'BALROG', level: 1, hitPoints: 18, damage: 5, value: 5000, range: 1, hitChanceMultiplier: 5 } ),
+		datacontext.createEntity('EnemyType', { id: 5, image: 'J', name: 'OCHRE JELLY', level: 1, hitPoints: 11, damage: 5, value: 0, range: 1, hitChanceMultiplier: 1 } ),
+		datacontext.createEntity('EnemyType', { id: 6, image: 'O', name: 'GREY OOZE', level: 1, hitPoints: 11, damage: 5, value: 0, range: 1, hitChanceMultiplier: 2 } ),
+		datacontext.createEntity('EnemyType', { id: 7, image: 'N', name: 'GNOME', level: 1, hitPoints: 13, damage: 5, value: 100, range: 1, hitChanceMultiplier: 3 } ),
+		datacontext.createEntity('EnemyType', { id: 8, image: 'K', name: 'KOBOLD', level: 1, hitPoints: 15, damage: 5, value: 500, range: 1, hitChanceMultiplier: 3 } ),
+		datacontext.createEntity('EnemyType', { id: 9, image: 'M', name: 'MUMMY', level: 1, hitPoints: 16, damage: 5, value: 100, range: 1, hitChanceMultiplier: 4 } )
 	]);
 
 	var spells = ko.observableArray([
@@ -37,7 +37,7 @@
 	var tileTypes = ko.observableArray([
 		datacontext.createEntity('TileType', { name: 'WALL', designerImage: '*', image: '*' } ),
 		datacontext.createEntity('TileType', { name: 'EMPTY', designerImage: '.', image: ' '} ),
-		datacontext.createEntity('TileType', { name: 'GOLD', designerImage: '$', image: '$'  } ),
+		datacontext.createEntity('TileType', { name: 'GOLD', designerImage: '$', image: '$', value: 0  } ),
 		datacontext.createEntity('TileType', { name: 'ENEMY', designerImage: 'E', image: 'E'  } ),
 		datacontext.createEntity('TileType', { name: 'DOOR', designerImage: 'D', image: 'D'  } ),
 		datacontext.createEntity('TileType', { name: 'LINE END', designerImage: ',', image: ' '  } )

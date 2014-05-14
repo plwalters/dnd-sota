@@ -191,7 +191,7 @@
 
 
 	<!-- Right side panel -->
-	<div class="span2" data-bind="visible: session.settings().ShowInstructions">
+	<div class="span2" data-bind="visible: (session.settings().ShowInstructions() && state() === 6)">
 		<h3>INSTRUCTIONS</h3>
 		<ul data-bind="foreach: instructions">
 			<li class="clickable" data-bind="click: $parent.clickInstruction">
